@@ -7,27 +7,28 @@
    /* some common rules */
 DIGIT	 [0-9]
 CHAR     [a-zA-Z]
-UNDER	 [_]
-IDENT 	 CHAR(CHAR|DIGIT|UNDER)*
+/*UNDER	 [_]*/
+/*IDENT  CHAR(CHAR|DIGIT|UNDER)*CHAR*/
+IDENT	 [a-zA-z][a-zA-Z0-9_]*
 
 
 %%
    /* specific lexer rules in regex */
 
-"="		            {printf("EQUAL\n");}
+"="		     {printf("EQUAL\n");}
 ":="                 {printf("ASSIGN\n");}
 "+"		     {printf("PLUS\n");}
 "-"		     {printf("SUB\n");}
 "*"		     {printf("MULT\n");}
 "/"		     {printf("DIV\n");}
 "("		     {printf("L_PAREN\n");}
-")"		            {printf("R_PAREN\n");}
-";"		            {printf("SEMICOLON\n");}
-":"    	            {printf("COLON\n");}
-"<"		            {printf("LT\n");}
-"<="		            {printf("LTE\n");}
-">"		            {printf("GT\n");}
-">="		            {printf("GTE\n");}
+")"		     {printf("R_PAREN\n");}
+";"		     {printf("SEMICOLON\n");}
+":"    	             {printf("COLON\n");}
+"<"		     {printf("LT\n");}
+"<="		     {printf("LTE\n");}
+">"		     {printf("GT\n");}
+">="		     {printf("GTE\n");}
 "["                  {printf("L_SQUARE_BRACKET\n");}
 "]"                  {printf("R_SQUARE_BRACKET\n");}
 
@@ -52,9 +53,9 @@ IDENT 	 CHAR(CHAR|DIGIT|UNDER)*
 "endbody"           {printf("END_BODY\n");}
 
 {DIGIT}+	    {printf("NUMBER %s\n", yytext);}
-{CHAR}+		    {printf("IDENT %s\n", yytext);}
+{IDENT}		    {printf("IDENT %s\n", yytext);}
 [ \t\n]+ 	    /* {printf("WHITESPACE");}*/
-. 		    {printf("ERROR\n"); exit(0);}
+. 		    {printf("ERROR %s\n", yytext); exit(0);}
 
 %%
         /* C functions used in lexer */
