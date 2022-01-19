@@ -7,15 +7,15 @@
    /* some common rules */
 DIGIT	 [0-9]
 CHAR     [a-zA-Z]
-/*UNDER	 [_]*/
-/*IDENT  CHAR(CHAR|DIGIT|UNDER)*CHAR*/
-IDENT	 [a-zA-z][a-zA-Z0-9_]*
+	/* UNDER	 [_] */
+	/* IDENT  CHAR(CHAR|DIGIT|UNDER)*CHAR */
+IDENT	 [a-zA-Z][a-zA-Z0-9_]*
 
 
 %%
    /* specific lexer rules in regex */
 
-"="		     {printf("EQUAL\n");}
+"=="		     {printf("EQ\n");}
 ":="                 {printf("ASSIGN\n");}
 "+"		     {printf("PLUS\n");}
 "-"		     {printf("SUB\n");}
@@ -31,6 +31,8 @@ IDENT	 [a-zA-z][a-zA-Z0-9_]*
 ">="		     {printf("GTE\n");}
 "["                  {printf("L_SQUARE_BRACKET\n");}
 "]"                  {printf("R_SQUARE_BRACKET\n");}
+"#"		     
+
 
 "if"                {printf("IF\n");}
 "endif"             {printf("ENDIF\n");}
