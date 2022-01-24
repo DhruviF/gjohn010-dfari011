@@ -7,12 +7,13 @@ int space_count = 1;
 %}
 
    /* some common rules */
-DIGIT	 [0-9]
-CHAR     [a-zA-Z]
-	/* UNDER	 [_] */
+DIGIT	 	[0-9]
+CHAR     	[a-zA-Z]
+DIGITORCHAR 	[a-zA-Z0-9]
+UNDER	 	[_]
 	/* IDENT  CHAR(CHAR|DIGIT|UNDER)*CHAR */
-IDENT	 [a-zA-Z][a-zA-Z0-9_]*
-COMMENTS [#][#][\?,=<>;/:\(\)\[\].a-zA-Z0-9_\t ]*
+IDENT	 	[a-zA-Z][a-zA-Z0-9_]*
+COMMENTS 	[#][#][\?,=<>;/:\(\)\[\].a-zA-Z0-9_\t ]*
 
 %%
    /* specific lexer rules in regex */
@@ -37,7 +38,7 @@ COMMENTS [#][#][\?,=<>;/:\(\)\[\].a-zA-Z0-9_\t ]*
 " "                  {space_count++;}
 "%"		     {printf("MOD\n"); space_count++;}
 "<>"		     {printf("NEQ\n"); space_count++;}
-","		     {printf("COMMA\n"; space_count++;}
+","		     {printf("COMMA\n"); space_count++;}
 "\t"		     {space_count = space_count + yyleng;}
 "\n"		     {line_count++; space_count = 1;}
 
@@ -54,9 +55,9 @@ COMMENTS [#][#][\?,=<>;/:\(\)\[\].a-zA-Z0-9_\t ]*
 "continue"          {printf("CONTINUE\n"); space_count+=8;}
 "break"		    {printf("BREAK\n"); space_count+=5;}
 "not"		    {printf("NOT\n"); space_count+=3;}
-"true"		    {printf("TRUE\n"); space_count+=4}
-"false"		    {printf("FALSE\n"); space_count+=5}
-"return"            {printf("RETURN\n"); space_count+=6}
+"true"		    {printf("TRUE\n"); space_count+=4;}
+"false"		    {printf("FALSE\n"); space_count+=5;}
+"return"            {printf("RETURN\n"); space_count+=6;}
 
 "beginloop"         {printf("BEGINLOOP\n"); space_count+=9;}
 "endloop"           {printf("ENDLOOP\n"); space_count+=7;}
@@ -67,12 +68,18 @@ COMMENTS [#][#][\?,=<>;/:\(\)\[\].a-zA-Z0-9_\t ]*
 "beginbody"         {printf("BEGIN_BODY\n"); space_count+=9;}
 "endbody"           {printf("END_BODY\n"); space_count+=7;}
 
+({DIGITORCHAR}*{UNDER})            {printf("Error at line %d, column %d: identifier \"%s\" cannot end with an underscore\n", line_count, space_count, yytext); exit(0);}
+
 
 {DIGIT}+	    {printf("NUMBER %s\n", yytext); space_count = space_count + yyleng;}
 {IDENT}		    {printf("IDENT %s\n", yytext); space_count = space_count + yyleng;}
 {COMMENTS}          {line_count++; space_count = 1;}
-({ID}[_])	    {printf("Error at line %d, column %d: identifier \"%s\" cannot end with an underscore", line_count, space_count, yytext); exit(0);}
-. 		    {printf("Error at line %d, column %d: unrecognized symbol \"%s\"\n", line_count, space_count, yytext); exit(0);}
+
+
+({UNDER}+{IDENT})	   	{printf("Error at line %d, column %d: identifier \"%s\" must begin with a letter\n", line_count, space_count, yytext); exit(0);}
+({DIGIT}+{IDENT})               {printf("Error at line %d, column %d: identifier \"%s\" must begin with a letter\n", line_count, space_count, yytext); exit(0);}
+
+. 		    		{printf("Error at line %d, column %d: unrecognized symbol \"%s\"\n", line_count, space_count, yytext); exit(0);}
 
 
 %%
