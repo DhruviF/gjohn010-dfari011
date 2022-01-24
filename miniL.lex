@@ -36,6 +36,10 @@ COMMENTS [#][#][\?,=<>;/:\(\)\[\].a-zA-Z0-9_\t ]*
 "#"		     
 " "                  {space_count++;}
 "%"		     {printf("MOD\n"); space_count++;}
+"<>"		     {printf("NEQ\n"); space_count++;}
+","		     {printf("COMMA\n"; space_count++;}
+"\t"		     {space_count = space_count + yyleng;}
+"\n"		     {line_count++; space_count = 1;}
 
 "if"                {printf("IF\n"); space_count+=2;}
 "endif"             {printf("ENDIF\n"); space_count+=5;}
@@ -47,6 +51,12 @@ COMMENTS [#][#][\?,=<>;/:\(\)\[\].a-zA-Z0-9_\t ]*
 "write"             {printf("WRITE\n"); space_count+=5;}
 "array"             {printf("ARRAY\n"); space_count+=5;}
 "of"                {printf("OF\n"); space_count+=2;}
+"continue"          {printf("CONTINUE\n"); space_count+=8;}
+"break"		    {printf("BREAK\n"); space_count+=5;}
+"not"		    {printf("NOT\n"); space_count+=3;}
+"true"		    {printf("TRUE\n"); space_count+=4}
+"false"		    {printf("FALSE\n"); space_count+=5}
+"return"            {printf("RETURN\n"); space_count+=6}
 
 "beginloop"         {printf("BEGINLOOP\n"); space_count+=9;}
 "endloop"           {printf("ENDLOOP\n"); space_count+=7;}
@@ -57,10 +67,12 @@ COMMENTS [#][#][\?,=<>;/:\(\)\[\].a-zA-Z0-9_\t ]*
 "beginbody"         {printf("BEGIN_BODY\n"); space_count+=9;}
 "endbody"           {printf("END_BODY\n"); space_count+=7;}
 
+
 {DIGIT}+	    {printf("NUMBER %s\n", yytext); space_count = space_count + yyleng;}
-{IDENT}		    {printf("IDENT %s\n", yytext); space_count = space_count +yyleng;}
-[ \t\n]+ 	    /* {printf("WHITESPACE");}*/
-. 		    {printf("ERROR %s\n", yytext); exit(0);}
+{IDENT}		    {printf("IDENT %s\n", yytext); space_count = space_count + yyleng;}
+{COMMENTS}          {line_count++; space_count = 1;}
+({ID}[_])	    {printf("Error at line %d, column %d: identifier \"%s\" cannot end with an underscore", line_count, space_count, yytext); exit(0);}
+. 		    {printf("Error at line %d, column %d: unrecognized symbol \"%s\"\n", line_count, space_count, yytext); exit(0);}
 
 
 %%
