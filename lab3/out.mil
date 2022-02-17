@@ -1,0 +1,8 @@
+funcmain
+. a
+. b
+. c
+. __temp__0
++ __temp__0, a, 12
+= a, __temp__0
+
