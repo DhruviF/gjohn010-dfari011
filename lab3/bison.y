@@ -119,7 +119,7 @@ function: FUNCTION IDENT
   // add the function to the symbol table.
   std::string func_name = $2;
   add_function_to_symbol_table(func_name);
-  out << "func" << func_name << std::endl;
+  out << "func " << func_name << std::endl;
 
   
 
@@ -130,6 +130,7 @@ function: FUNCTION IDENT
 	BEGIN_BODY statements END_BODY
 {
   printf("function -> FUNCTION IDENT ; BEGIN_PARAMS declarations END_PARAMS BEGIN_LOCALS declarations END_LOCALS BEGIN_BODY statements END_BODY\n");
+  out << "endfunc" << std::endl;
 };
 
 declarations: 
@@ -174,6 +175,7 @@ IDENT ASSIGN symbol ADD symbol
   out << "+ " << temp << ", " << $3 << ", " << $5 << std::endl;
   out << "= " << $1 << ", " << temp << std::endl;
 
+
 }
 | IDENT ASSIGN symbol SUB symbol
 {
@@ -211,6 +213,12 @@ IDENT ASSIGN symbol ADD symbol
 | IDENT ASSIGN symbol
 {
   printf("statement -> IDENT := symbol\n");
+  // catch unidentified variables here
+  std::string dest = $1;
+  if (!find(dest)) {
+    yyerror("Error. Cannot find variable in symbol table.");
+  }
+  
   out << "= " << $1 << ", " << $3 << std::endl;
 }
 
