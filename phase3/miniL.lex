@@ -4,19 +4,20 @@
    /* write your C code here for definitions of variables and including headers */
    #include "y.tab.h"
    int line_count = 1, space_count = 0;
+   extern char *identToken;
+   extern int numberToken;
 %}
+
    /* some common rules */
 DIGIT	 	         [0-9]
-   /* DIGITORUNDER      [0-9_] */
 CHAR     	      [a-zA-Z]
 CHARORUNDER       [a-zA-Z_]
 DIGITORCHAR 	   [0-9a-zA-Z]
-   /*  DIGITORCHARORUNDER 	[0-9a-zA-Z_] */
 WHITESPACE        [\t ]
 NEWLINE           [\n]
-UNDER	 	      [_]  
-IDENT	 	      [a-zA-Z][a-zA-Z0-9_]*
-COMMENTS 	   [#][#][\?,=<>;/:\(\)\[\].a-zA-Z0-9_\t ]*
+UNDER	 	         [_]  
+IDENT	 	         [a-zA-Z][a-zA-Z0-9_]*
+COMMENTS 	      [#][#][\?,=<>;/:\(\)\[\].a-zA-Z0-9_\t ]*
 
 %% 
 "=="		     return EQ; space_count+=2;
@@ -41,8 +42,8 @@ COMMENTS 	   [#][#][\?,=<>;/:\(\)\[\].a-zA-Z0-9_\t ]*
 "##".*{NEWLINE}   space_count = 0; ++line_count;
 {WHITESPACE}+     space_count += yyleng;
 {NEWLINE}+        line_count += yyleng; space_count = 0;  
-"%"		     return MOD; space_count++;
-"<>"		     return NEQ; space_count+=2;
+"%"		         return MOD; space_count++;
+"<>"		         return NEQ; space_count+=2;
 
 ","		      return COMMA; space_count++;
 "if"           return IF; space_count += yyleng;
@@ -76,10 +77,22 @@ COMMENTS 	   [#][#][\?,=<>;/:\(\)\[\].a-zA-Z0-9_\t ]*
 "else"         return ELSE; space_count += yyleng;
 "do"           return DO; space_count += yyleng;
 
-{CHAR}({CHARORUNDER}*{DIGITORCHAR}+)? {
-  yylval.ident_val = yytext;
-  return IDENT;
-  space_count += yyleng;
+{DIGIT}+ {
+  space_count += yyleng; 
+  char * token = new char[yyleng];
+  strcpy(token, yytext);
+  yylval.ident_val = token;
+  numberToken = atoi(yytext); 
+  return NUMBER;
+}
+
+({CHAR})|({CHAR}({CHAR}|{DIGIT}|"_")*({CHAR}|{DIGIT})) {
+   space_count += yyleng;
+   char * token = new char[yyleng];
+   strcpy(token, yytext);
+   yylval.ident_val = token;
+   identToken = yytext; 
+   return IDENT;
 }
 
 {DIGIT}+    { return NUMBER; space_count = space_count + yyleng; yylval.num_val = atoi(yytext);}
@@ -89,5 +102,4 @@ COMMENTS 	   [#][#][\?,=<>;/:\(\)\[\].a-zA-Z0-9_\t ]*
 . 		    		            {printf("Error at line %d, column %d: unrecognized symbol \"%s\"\n", line_count, space_count, yytext); exit(0);}
 
 %%
-	/* C functions used in lexer */
    

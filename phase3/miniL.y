@@ -3,8 +3,6 @@
 #define YY_NO_UNPUT
 #include <stdio.h>
 #include <stdlib.h>
-
- // new includes below
 #include <string>
 #include <vector>
 #include <string.h>
@@ -17,8 +15,6 @@ void yyerror(const char *s);
 extern int line_count;
 extern char* yytext;
 extern FILE * yyin;
-
-// the code added below is from lab 3
 
 extern int yylex(void);
 char *identToken;
@@ -157,10 +153,14 @@ void print_symbol_table(void) {
 %type <code_node> Statement
 %type <code_node> Statement_Loop
 %type <code_node> Var
-// %type <ident_val> Var
+%type <code_node> Expression
+%type <code_node> Expression_Loop
+%type <code_node> Mult_Expr
+%type <code_node> Comp
+%type <code_node> Term
 
 %type <ident_val> Ident
-%type <ident_val> Ident_Loop
+// %type <ident_val> Ident_Loop
 
 /* %start program */
 
@@ -168,10 +168,10 @@ void print_symbol_table(void) {
 
   /* write your rules here */
   Program: Functions 
-		{
-      CodeNode *node = $1;
-      printf("%s\n", node->code.c_str());
-    };
+{
+  CodeNode *node = $1;
+  printf("%s\n", node->code.c_str());
+};
 
 Functions: Function Functions {
   CodeNode *code_node1 = $1;
@@ -181,7 +181,8 @@ Functions: Function Functions {
   node->code = code_node1->code + code_node2->code;
   $$ = node;
 }
-    | %empty {
+    | %empty 
+{
       CodeNode *node = new CodeNode;
       $$ = node;
 }
@@ -205,23 +206,24 @@ Function: FUNCTION Ident SEMICOLON BEGIN_PARAMS Declaration_Loop END_PARAMS BEGI
   node->code += statements->code;
 
   node->code += std::string("endfunc\n");
-
   $$ = node;
 }
 ;
 
-Declaration: Ident_Loop COLON INTEGER
+Declaration: Ident COLON INTEGER
   {
     // printf("Declaration: %s\n", $1);
     std::string id = $1;
     CodeNode *node = new CodeNode;
     node->code = std::string(". ") + id + std::string("\n");
     $$ = node;
-
-
   }
-    | Ident_Loop COLON ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF INTEGER
-  {printf("Declaration -> Ident_Loop COLON ARRAY L_SQUARE_BRACKET NUMBER %d R_SQUARE_BRACKET OF INTEGER;\n");}
+    | Ident COLON ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF INTEGER
+  {
+    CodeNode *node = new CodeNode;
+    // insert intermediate codes
+    $$ = node;
+  }
 ;
 
 Declaration_Loop: %empty
@@ -237,169 +239,308 @@ Declaration_Loop: %empty
     CodeNode *node = new CodeNode;
     node->code = code_node1->code + code_node2->code;
     $$ = node;
-    }
+  }
 ;
 
-Ident_Loop: Ident
-  {printf("Ident_Loop -> Ident \n");}
+  /* Ident_Loop: Ident
+  {
+    // insert intermediate code
+    std::string id = $1;
+    CodeNode *node = new CodeNode;
+    node->name = id;
+    $$ = node;
+
+  }
     | Ident COMMA Ident_Loop
-  {printf("Ident_Loop -> Ident COMMA Ident_Loop\n");}
+  {
+    // insert intermediate code
+    std::string id = $1;
+    CodeNode *node = new CodeNode;
+    node->name = id;
+    CodeNode *identnode = $3;
+    node->name += identnode->name;
+    $$ = node;
+    
+  } */
 
 Ident:  IDENT
   {
-    printf("Ident -> IDENT %s \n", $1);
+    // insert intermediate code
     $$ = $1;
   }
 
-Statement_Loop: Statement SEMICOLON Statement_Loop
+Statement_Loop: %empty 
   {
-  CodeNode *code_node1 = $1;
-  CodeNode *code_node2 = $3;
-
-  CodeNode *node = new CodeNode;
-  node->code = code_node1->code + code_node2->code;
-  $$ = node;  
+    CodeNode *node = new CodeNode;
+    $$ = node; 
   }
-          | %empty {
-            CodeNode *node = new CodeNode;
-            $$ = node; 
-          }
-    | Statement SEMICOLON
-  {printf("Statement_Loop -> Statement SEMICOLON\n");}
+    | Statement SEMICOLON Statement_Loop
+  {
+    CodeNode *code_node1 = $1;
+    CodeNode *code_node2 = $3;
+
+    CodeNode *node = new CodeNode;
+    node->code = code_node1->code + code_node2->code;
+    // printf("%p %p\n", $1, $3);
+    $$ = node;  
+  }
 ;
 
 Statement: Ident ASSIGN Expression
   {
     CodeNode *node = new CodeNode;
     std::string id = $1;
+    CodeNode *nodeExpr = $3;
+    // printf(id.c_str());
     node->code = "";      //hard coded: expression.name
+    node->code += nodeExpr->code;
+
     node->code = std::string("= ") + id + std::string(", 150\n");
+    // printf("%s \n", node->code.c_str());
     $$ = node;
   }
     | Ident L_SQUARE_BRACKET Expression R_SQUARE_BRACKET ASSIGN Expression 
   {
-
+    CodeNode *node = new CodeNode;
+    $$ = node;
   }
     | IF BoolExp THEN Statement_Loop ElseStatement ENDIF
   {
-    printf("Statement -> IF BoolExp THEN Statement_Loop ElseStatement ENDIF\n");
+    CodeNode *node = new CodeNode;
+    $$ = node;
   }		 
     | WHILE BoolExp BEGINLOOP Statement_Loop ENDLOOP
 	{
-    printf("Statement -> WHILE BoolExp BEGINLOOP Statement_Loop ENDLOOP\n");
+    CodeNode *node = new CodeNode;
+    $$ = node;
   }
     | DO BEGINLOOP Statement_Loop ENDLOOP WHILE BoolExp
 	{
-    printf("Statement -> DO BEGINLOOP Statement_Loop ENDLOOP WHILE BoolExp\n");
+    CodeNode *node = new CodeNode;
+    $$ = node;
   }
     | READ Var
 	{
-    printf("Statement -> READ Var\n");
+    CodeNode *node = new CodeNode;
+    $$ = node;
   }
     | WRITE Var
   {
-      // CodeNode *node = new CodeNode;
-      // std::string var = "n";  //var.name
-      // node->code = ".> n\n";
-      // $$ = node;
-
       CodeNode *node = new CodeNode;
       CodeNode *var = $2;
       std::string id = var->name;
+      // printf(id.c_str());
       node->code = "";
       node->code += std::string(".> ") + id + std::string("\n");
       $$ = node;
   }
     | CONTINUE
 	{
-    printf("Statement -> CONTINUE\n");
+    CodeNode *node = new CodeNode;
+    $$ = node;
   }
     | BREAK
 	{
-    printf("Statement -> BREAK\n");
+    CodeNode *node = new CodeNode;
+    $$ = node;
   }
     | RETURN Expression
 	{
-    printf("Statement -> RETURN Expression\n");
+    CodeNode *node = new CodeNode;
+    $$ = node;
   }
 ;
 
 ElseStatement:  %empty
-  {printf("ElseStatement -> epsilon\n");}
+  {
+    // insert intermediate code
+    
+  }
     | ELSE Statement_Loop
-	{printf("ElseStatement -> ELSE Statement_Loop\n");}
+	{
+    // insert intermediate code
+  }
 ;
 
 BoolExp:  NOT BoolExpression
-  {printf("bool_exp -> NOT bool_exp\n");}
+  {
+    // insert intermediate code
+  }
     | BoolExpression
-  {printf("bool_exp -> bool_exp1\n");}
+  {
+    // insert intermediate code
+  }
 
 ;
+
 BoolExpression: Expression Comp Expression
-  {printf("bool_exp -> Expression Comp Expression\n");}
+  {
+    // insert intermediate code
+  }
     | TRUE
-  {printf("bool_exp  -> TRUE\n");}
+  {
+    // insert intermediate code
+  }
     | FALSE
-  {printf("bool_exp  -> FALSE\n");}
+  {
+    // insert intermediate code
+  }
     | L_PAREN BoolExp R_PAREN
-  {printf("bool_exp  -> L_PAREN BoolExp R_PAREN\n");}
+  {
+    // insert intermediate code
+  }
 ;
 
 Comp: EQ
-  {printf("comp -> EQ\n");}
+  {
+    CodeNode *node = new CodeNode;
+    $$ = node;
+  }
     | NEQ
-  {printf("comp -> NEQ\n");}
+  {
+    CodeNode *node = new CodeNode;
+    $$ = node;
+  }
     | LT
-  {printf("comp -> LT\n");}
+  {
+    CodeNode *node = new CodeNode;
+    $$ = node;
+  }
     | GT
-  {printf("comp -> GT\n");}
+  {
+    CodeNode *node = new CodeNode;
+    $$ = node;
+  }
     | LTE
-  {printf("comp -> LTE\n");}
+  {
+    CodeNode *node = new CodeNode;
+    $$ = node;
+  }
     | GTE
-  {printf("comp -> GTE\n");}
+  {
+    CodeNode *node = new CodeNode;
+    $$ = node;
+  }
 ;
 
 Expression: Mult_Expr
-  {printf("Expression -> Mult_Expr\n");}
+  {
+    // insert intermediate code
+    CodeNode *node = new CodeNode;
+    $$ = node;
+  }
     | Mult_Expr PLUS Expression
-  {printf("Expression -> Mult_Expr PLUS Expression\n");}
+  {
+    CodeNode *node = new CodeNode;
+    $$ = node;
+      /*
+    // std::string temp = gen_temp();
+    // CodeNode *node = new CodeNode;
+    // node->code = $1->code + $3->code + decl_temp_code(temp);
+    // node->code += std::string("+ ") + temp + std::string(", ") + $1->name + std::string(", ") + $3->name + std::string("\n");
+    // node->name = temp;
+    // $$ = node;
+    */
+  }
     | Mult_Expr SUB Expression
-	{printf("Expression -> Mult_Expr SUB Expression\n");}
+	{
+    // insert intermediate 
+    CodeNode *node = new CodeNode;
+    $$ = node;
+  }
 ;
 
 Expression_Loop:  %empty
-  {printf("Expression_Loop -> epsilon\n");}
+  {
+    // insert intermediate code
+    CodeNode *node = new CodeNode;
+    $$ = node;
+  }
     | Expression COMMA Expression_Loop
-  {printf("Expression_Loop -> Expression COMMA Expression_Loop\n");}
+  {
+    // insert intermediate code
+    CodeNode *node = new CodeNode;
+    $$ = node;
+  }
     | Expression
-  {printf("Expression_Loop -> Expression\n");}
+  {
+    // insert intermediate code
+    CodeNode *node = new CodeNode;
+    $$ = node;
+  }
 ;
 
 Mult_Expr:  Term
-  {printf("Mult_Expr -> Term\n");}
+  {
+    // insert intermediate code
+    CodeNode *node = new CodeNode;
+    $$ = node;
+  }
     | Term MULT Mult_Expr
-  {printf("Mult_Expr -> Term MULT Mult_Expr\n");}
+  {
+    // insert intermediate code
+    CodeNode *node = new CodeNode;
+    $$ = node;
+  }
   | Term DIV Mult_Expr
-	{printf("Mult_Expr -> Term DIV Mult_Expr\n");}
+	{
+    // insert intermediate code
+    CodeNode *node = new CodeNode;
+    $$ = node;
+  }
     | Term MOD Mult_Expr
-  {printf("Mult_Expr -> Term MOD Mult_Expr\n");}
+  {
+    // insert intermediate code
+    CodeNode *node = new CodeNode;
+    $$ = node;
+  }
 ;
 
 Term: Var
-  {printf("Term -> Var\n");}
+  {
+    // insert intermediate code
+    CodeNode *node = new CodeNode;
+    $$ = node;
+  }
     | NUMBER
-  {printf("Term -> NUMBER\n");}
+  {
+    // insert intermediate code
+    CodeNode *node = new CodeNode;
+    $$ = node;
+  }
     | L_PAREN Expression R_PAREN
-  {printf("Term -> L_PAREN Expression R_PAREN\n");}
+  {
+    // insert intermediate code
+    CodeNode *node = new CodeNode;
+    $$ = node;
+  }
     | Ident L_PAREN Expression_Loop R_PAREN
-  {printf("Term -> Ident L_PAREN Expression_Loop R_PAREN\n");}
+  {
+    // insert intermediate code
+    CodeNode *node = new CodeNode;
+    $$ = node;
+  } 
+    /* | Ident COMMA Ident
+  {
+    // insert intermediate code
+    CodeNode *node = new CodeNode;
+    $$ = node;
+  } */
 ;
 
 Var:  Ident L_SQUARE_BRACKET Expression R_SQUARE_BRACKET
-  {printf("Var -> Ident  L_SQUARE_BRACKET Expression R_SQUARE_BRACKET\n");}
+  {
+    CodeNode *node = new CodeNode;
+    $$ = node;
+  }
     | Ident
-  {printf("Var -> Ident \n");}
+  {
+    std::string name = $1;
+    CodeNode *node = new CodeNode;
+    node->code = "";
+    node->name = name;
+    $$ = node;
+  }
 ;
 
 %% 
@@ -426,13 +567,9 @@ void yyerror(const char *s) {
       yyin = stdin;
     }
 
-    // yyparse();
     yyparse();
     print_symbol_table();
     std::ofstream file("out.mil");
     file << out.str() << std::endl;
-    return 0;
-    
-  
     return 0;
   }  
