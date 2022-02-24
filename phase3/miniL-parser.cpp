@@ -108,6 +108,10 @@ Function *get_function() {
   return &symbol_table[last];
 }
 
+std::string decl_temp_code(std::string &temp){
+  return std::string(". ") + temp + std::string("\n");
+}
+
 bool find(std::string &value) {
   Function *f = get_function();
   for(int i=0; i < f->declarations.size(); i++) {
@@ -147,7 +151,7 @@ void print_symbol_table(void) {
 } 
 
 
-#line 151 "miniL-parser.cpp" /* yacc.c:339  */
+#line 155 "miniL-parser.cpp" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -237,14 +241,14 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 87 "miniL.y" /* yacc.c:355  */
+#line 91 "miniL.y" /* yacc.c:355  */
 
   /* put your types here */
   char* ident_val;
   int num_val;
   struct CodeNode *code_node;
 
-#line 248 "miniL-parser.cpp" /* yacc.c:355  */
+#line 252 "miniL-parser.cpp" /* yacc.c:355  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -261,7 +265,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 265 "miniL-parser.cpp" /* yacc.c:358  */
+#line 269 "miniL-parser.cpp" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -563,12 +567,12 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   170,   170,   176,   184,   190,   213,   221,   229,   234,
-     266,   272,   277,   289,   302,   307,   312,   317,   322,   327,
-     337,   342,   347,   354,   359,   365,   369,   376,   380,   384,
-     388,   394,   399,   404,   409,   414,   419,   426,   432,   445,
-     453,   459,   465,   473,   479,   485,   491,   499,   505,   511,
-     517,   531,   536
+       0,   174,   174,   180,   188,   194,   217,   225,   233,   238,
+     250,   255,   260,   272,   291,   297,   302,   307,   312,   321,
+     330,   337,   344,   354,   359,   365,   369,   376,   380,   384,
+     388,   394,   399,   404,   409,   414,   419,   426,   433,   443,
+     454,   460,   466,   472,   478,   487,   496,   507,   513,   523,
+     530,   545,   555
 };
 #endif
 
@@ -1416,16 +1420,16 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 171 "miniL.y" /* yacc.c:1646  */
+#line 175 "miniL.y" /* yacc.c:1646  */
     {
   CodeNode *node = (yyvsp[0].code_node);
   printf("%s\n", node->code.c_str());
 }
-#line 1425 "miniL-parser.cpp" /* yacc.c:1646  */
+#line 1429 "miniL-parser.cpp" /* yacc.c:1646  */
     break;
 
   case 3:
-#line 176 "miniL.y" /* yacc.c:1646  */
+#line 180 "miniL.y" /* yacc.c:1646  */
     {
   CodeNode *code_node1 = (yyvsp[-1].code_node);
   CodeNode *code_node2 = (yyvsp[0].code_node);
@@ -1434,25 +1438,25 @@ yyreduce:
   node->code = code_node1->code + code_node2->code;
   (yyval.code_node) = node;
 }
-#line 1438 "miniL-parser.cpp" /* yacc.c:1646  */
+#line 1442 "miniL-parser.cpp" /* yacc.c:1646  */
     break;
 
   case 4:
-#line 185 "miniL.y" /* yacc.c:1646  */
+#line 189 "miniL.y" /* yacc.c:1646  */
     {
       CodeNode *node = new CodeNode;
       (yyval.code_node) = node;
 }
-#line 1447 "miniL-parser.cpp" /* yacc.c:1646  */
+#line 1451 "miniL-parser.cpp" /* yacc.c:1646  */
     break;
 
   case 5:
-#line 191 "miniL.y" /* yacc.c:1646  */
+#line 195 "miniL.y" /* yacc.c:1646  */
     {
   CodeNode *node = new CodeNode;
   std::string func_name = (yyvsp[-10].ident_val);
   node->code = "";
-  node->code += std::string("func") + func_name + std::string("\n");
+  node->code += std::string("func ") + func_name + std::string("\n");
   // declare the declarations
   CodeNode *params = (yyvsp[-7].code_node);
   node->code += params->code;
@@ -1468,11 +1472,11 @@ yyreduce:
   node->code += std::string("endfunc\n");
   (yyval.code_node) = node;
 }
-#line 1472 "miniL-parser.cpp" /* yacc.c:1646  */
+#line 1476 "miniL-parser.cpp" /* yacc.c:1646  */
     break;
 
   case 6:
-#line 214 "miniL.y" /* yacc.c:1646  */
+#line 218 "miniL.y" /* yacc.c:1646  */
     {
     // printf("Declaration: %s\n", $1);
     std::string id = (yyvsp[-2].ident_val);
@@ -1480,30 +1484,30 @@ yyreduce:
     node->code = std::string(". ") + id + std::string("\n");
     (yyval.code_node) = node;
   }
-#line 1484 "miniL-parser.cpp" /* yacc.c:1646  */
+#line 1488 "miniL-parser.cpp" /* yacc.c:1646  */
     break;
 
   case 7:
-#line 222 "miniL.y" /* yacc.c:1646  */
+#line 226 "miniL.y" /* yacc.c:1646  */
     {
     CodeNode *node = new CodeNode;
     // insert intermediate codes
     (yyval.code_node) = node;
   }
-#line 1494 "miniL-parser.cpp" /* yacc.c:1646  */
+#line 1498 "miniL-parser.cpp" /* yacc.c:1646  */
     break;
 
   case 8:
-#line 230 "miniL.y" /* yacc.c:1646  */
+#line 234 "miniL.y" /* yacc.c:1646  */
     {
     CodeNode *node = new CodeNode;
     (yyval.code_node) = node;  // empty
   }
-#line 1503 "miniL-parser.cpp" /* yacc.c:1646  */
+#line 1507 "miniL-parser.cpp" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 235 "miniL.y" /* yacc.c:1646  */
+#line 239 "miniL.y" /* yacc.c:1646  */
     {
     CodeNode *code_node1 = (yyvsp[-2].code_node);
     CodeNode *code_node2 = (yyvsp[0].code_node);
@@ -1512,29 +1516,28 @@ yyreduce:
     node->code = code_node1->code + code_node2->code;
     (yyval.code_node) = node;
   }
-#line 1516 "miniL-parser.cpp" /* yacc.c:1646  */
+#line 1520 "miniL-parser.cpp" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 267 "miniL.y" /* yacc.c:1646  */
+#line 251 "miniL.y" /* yacc.c:1646  */
     {
-    // insert intermediate code
     (yyval.ident_val) = (yyvsp[0].ident_val);
   }
-#line 1525 "miniL-parser.cpp" /* yacc.c:1646  */
+#line 1528 "miniL-parser.cpp" /* yacc.c:1646  */
     break;
 
   case 11:
-#line 273 "miniL.y" /* yacc.c:1646  */
+#line 256 "miniL.y" /* yacc.c:1646  */
     {
     CodeNode *node = new CodeNode;
     (yyval.code_node) = node; 
   }
-#line 1534 "miniL-parser.cpp" /* yacc.c:1646  */
+#line 1537 "miniL-parser.cpp" /* yacc.c:1646  */
     break;
 
   case 12:
-#line 278 "miniL.y" /* yacc.c:1646  */
+#line 261 "miniL.y" /* yacc.c:1646  */
     {
     CodeNode *code_node1 = (yyvsp[-2].code_node);
     CodeNode *code_node2 = (yyvsp[0].code_node);
@@ -1544,110 +1547,127 @@ yyreduce:
     // printf("%p %p\n", $1, $3);
     (yyval.code_node) = node;  
   }
-#line 1548 "miniL-parser.cpp" /* yacc.c:1646  */
+#line 1551 "miniL-parser.cpp" /* yacc.c:1646  */
     break;
 
   case 13:
-#line 290 "miniL.y" /* yacc.c:1646  */
+#line 273 "miniL.y" /* yacc.c:1646  */
     {
-    CodeNode *node = new CodeNode;
     std::string id = (yyvsp[-2].ident_val);
-    CodeNode *nodeExpr = (yyvsp[0].code_node);
-    // printf(id.c_str());
-    node->code = "";      //hard coded: expression.name
-    node->code += nodeExpr->code;
-
-    node->code = std::string("= ") + id + std::string(", 150\n");
-    // printf("%s \n", node->code.c_str());
+    CodeNode *node = new CodeNode;
+    node->code = (yyvsp[0].code_node)->code;
+    node->code += std::string("= ") + id + std::string(", ") + (yyvsp[0].code_node)->name + std::string("\n");
+    node->name = id;
     (yyval.code_node) = node;
+    
+
+      /* CodeNode *node = new CodeNode;
+    std::string id = $1;
+    CodeNode *nodeExpr = $3;
+    node->code = "";
+    node->code += nodeExpr->code;
+    node->code = std::string("= ") + id + std::string(", 150\n");
+    $$ = node;
+    */
   }
-#line 1565 "miniL-parser.cpp" /* yacc.c:1646  */
+#line 1574 "miniL-parser.cpp" /* yacc.c:1646  */
     break;
 
   case 14:
+#line 292 "miniL.y" /* yacc.c:1646  */
+    {
+    CodeNode *node = new CodeNode;
+
+    (yyval.code_node) = node;
+  }
+#line 1584 "miniL-parser.cpp" /* yacc.c:1646  */
+    break;
+
+  case 15:
+#line 298 "miniL.y" /* yacc.c:1646  */
+    {
+    CodeNode *node = new CodeNode;
+    (yyval.code_node) = node;
+  }
+#line 1593 "miniL-parser.cpp" /* yacc.c:1646  */
+    break;
+
+  case 16:
 #line 303 "miniL.y" /* yacc.c:1646  */
     {
     CodeNode *node = new CodeNode;
     (yyval.code_node) = node;
   }
-#line 1574 "miniL-parser.cpp" /* yacc.c:1646  */
+#line 1602 "miniL-parser.cpp" /* yacc.c:1646  */
     break;
 
-  case 15:
+  case 17:
 #line 308 "miniL.y" /* yacc.c:1646  */
     {
     CodeNode *node = new CodeNode;
     (yyval.code_node) = node;
   }
-#line 1583 "miniL-parser.cpp" /* yacc.c:1646  */
-    break;
-
-  case 16:
-#line 313 "miniL.y" /* yacc.c:1646  */
-    {
-    CodeNode *node = new CodeNode;
-    (yyval.code_node) = node;
-  }
-#line 1592 "miniL-parser.cpp" /* yacc.c:1646  */
-    break;
-
-  case 17:
-#line 318 "miniL.y" /* yacc.c:1646  */
-    {
-    CodeNode *node = new CodeNode;
-    (yyval.code_node) = node;
-  }
-#line 1601 "miniL-parser.cpp" /* yacc.c:1646  */
+#line 1611 "miniL-parser.cpp" /* yacc.c:1646  */
     break;
 
   case 18:
-#line 323 "miniL.y" /* yacc.c:1646  */
+#line 313 "miniL.y" /* yacc.c:1646  */
     {
     CodeNode *node = new CodeNode;
-    (yyval.code_node) = node;
-  }
-#line 1610 "miniL-parser.cpp" /* yacc.c:1646  */
-    break;
-
-  case 19:
-#line 328 "miniL.y" /* yacc.c:1646  */
-    {
-      CodeNode *node = new CodeNode;
       CodeNode *var = (yyvsp[0].code_node);
       std::string id = var->name;
-      // printf(id.c_str());
       node->code = "";
-      node->code += std::string(".> ") + id + std::string("\n");
+      node->code += std::string(".< ") + id + std::string("\n");
       (yyval.code_node) = node;
   }
 #line 1624 "miniL-parser.cpp" /* yacc.c:1646  */
     break;
 
+  case 19:
+#line 322 "miniL.y" /* yacc.c:1646  */
+    {
+      CodeNode *node = new CodeNode;
+      CodeNode *var = (yyvsp[0].code_node);
+      std::string id = var->name;
+      node->code = "";
+      node->code += std::string(".> ") + id + std::string("\n");
+      (yyval.code_node) = node;
+  }
+#line 1637 "miniL-parser.cpp" /* yacc.c:1646  */
+    break;
+
   case 20:
-#line 338 "miniL.y" /* yacc.c:1646  */
+#line 331 "miniL.y" /* yacc.c:1646  */
     {
     CodeNode *node = new CodeNode;
+    node->code = "";
+    node->code = std::string("continue\n");
     (yyval.code_node) = node;
   }
-#line 1633 "miniL-parser.cpp" /* yacc.c:1646  */
+#line 1648 "miniL-parser.cpp" /* yacc.c:1646  */
     break;
 
   case 21:
-#line 343 "miniL.y" /* yacc.c:1646  */
+#line 338 "miniL.y" /* yacc.c:1646  */
     {
     CodeNode *node = new CodeNode;
+    node->code = "";
+    node->code = std::string("break\n");
     (yyval.code_node) = node;
   }
-#line 1642 "miniL-parser.cpp" /* yacc.c:1646  */
+#line 1659 "miniL-parser.cpp" /* yacc.c:1646  */
     break;
 
   case 22:
-#line 348 "miniL.y" /* yacc.c:1646  */
+#line 345 "miniL.y" /* yacc.c:1646  */
     {
     CodeNode *node = new CodeNode;
+    CodeNode *expr = (yyvsp[0].code_node);
+    node->code = "";
+    node->code += std::string("return ") + expr->name + std::string("\n");
     (yyval.code_node) = node;
   }
-#line 1651 "miniL-parser.cpp" /* yacc.c:1646  */
+#line 1671 "miniL-parser.cpp" /* yacc.c:1646  */
     break;
 
   case 23:
@@ -1656,7 +1676,7 @@ yyreduce:
     // insert intermediate code
     
   }
-#line 1660 "miniL-parser.cpp" /* yacc.c:1646  */
+#line 1680 "miniL-parser.cpp" /* yacc.c:1646  */
     break;
 
   case 24:
@@ -1664,7 +1684,7 @@ yyreduce:
     {
     // insert intermediate code
   }
-#line 1668 "miniL-parser.cpp" /* yacc.c:1646  */
+#line 1688 "miniL-parser.cpp" /* yacc.c:1646  */
     break;
 
   case 25:
@@ -1672,7 +1692,7 @@ yyreduce:
     {
     // insert intermediate code
   }
-#line 1676 "miniL-parser.cpp" /* yacc.c:1646  */
+#line 1696 "miniL-parser.cpp" /* yacc.c:1646  */
     break;
 
   case 26:
@@ -1680,7 +1700,7 @@ yyreduce:
     {
     // insert intermediate code
   }
-#line 1684 "miniL-parser.cpp" /* yacc.c:1646  */
+#line 1704 "miniL-parser.cpp" /* yacc.c:1646  */
     break;
 
   case 27:
@@ -1688,7 +1708,7 @@ yyreduce:
     {
     // insert intermediate code
   }
-#line 1692 "miniL-parser.cpp" /* yacc.c:1646  */
+#line 1712 "miniL-parser.cpp" /* yacc.c:1646  */
     break;
 
   case 28:
@@ -1696,7 +1716,7 @@ yyreduce:
     {
     // insert intermediate code
   }
-#line 1700 "miniL-parser.cpp" /* yacc.c:1646  */
+#line 1720 "miniL-parser.cpp" /* yacc.c:1646  */
     break;
 
   case 29:
@@ -1704,7 +1724,7 @@ yyreduce:
     {
     // insert intermediate code
   }
-#line 1708 "miniL-parser.cpp" /* yacc.c:1646  */
+#line 1728 "miniL-parser.cpp" /* yacc.c:1646  */
     break;
 
   case 30:
@@ -1712,7 +1732,7 @@ yyreduce:
     {
     // insert intermediate code
   }
-#line 1716 "miniL-parser.cpp" /* yacc.c:1646  */
+#line 1736 "miniL-parser.cpp" /* yacc.c:1646  */
     break;
 
   case 31:
@@ -1721,7 +1741,7 @@ yyreduce:
     CodeNode *node = new CodeNode;
     (yyval.code_node) = node;
   }
-#line 1725 "miniL-parser.cpp" /* yacc.c:1646  */
+#line 1745 "miniL-parser.cpp" /* yacc.c:1646  */
     break;
 
   case 32:
@@ -1730,7 +1750,7 @@ yyreduce:
     CodeNode *node = new CodeNode;
     (yyval.code_node) = node;
   }
-#line 1734 "miniL-parser.cpp" /* yacc.c:1646  */
+#line 1754 "miniL-parser.cpp" /* yacc.c:1646  */
     break;
 
   case 33:
@@ -1739,7 +1759,7 @@ yyreduce:
     CodeNode *node = new CodeNode;
     (yyval.code_node) = node;
   }
-#line 1743 "miniL-parser.cpp" /* yacc.c:1646  */
+#line 1763 "miniL-parser.cpp" /* yacc.c:1646  */
     break;
 
   case 34:
@@ -1748,7 +1768,7 @@ yyreduce:
     CodeNode *node = new CodeNode;
     (yyval.code_node) = node;
   }
-#line 1752 "miniL-parser.cpp" /* yacc.c:1646  */
+#line 1772 "miniL-parser.cpp" /* yacc.c:1646  */
     break;
 
   case 35:
@@ -1757,7 +1777,7 @@ yyreduce:
     CodeNode *node = new CodeNode;
     (yyval.code_node) = node;
   }
-#line 1761 "miniL-parser.cpp" /* yacc.c:1646  */
+#line 1781 "miniL-parser.cpp" /* yacc.c:1646  */
     break;
 
   case 36:
@@ -1766,167 +1786,186 @@ yyreduce:
     CodeNode *node = new CodeNode;
     (yyval.code_node) = node;
   }
-#line 1770 "miniL-parser.cpp" /* yacc.c:1646  */
+#line 1790 "miniL-parser.cpp" /* yacc.c:1646  */
     break;
 
   case 37:
 #line 427 "miniL.y" /* yacc.c:1646  */
     {
     // insert intermediate code
-    CodeNode *node = new CodeNode;
+    CodeNode *node = (yyvsp[0].code_node);
+    // printf("reached here", node->name.c_str(), node->code.c_str());
     (yyval.code_node) = node;
   }
-#line 1780 "miniL-parser.cpp" /* yacc.c:1646  */
+#line 1801 "miniL-parser.cpp" /* yacc.c:1646  */
     break;
 
   case 38:
-#line 433 "miniL.y" /* yacc.c:1646  */
+#line 434 "miniL.y" /* yacc.c:1646  */
     {
+    std::string temp = gen_temp();
     CodeNode *node = new CodeNode;
+    node->code = (yyvsp[-2].code_node)->code + (yyvsp[0].code_node)->code + decl_temp_code(temp);
+    node->code += std::string("+ ") + temp + std::string(", ") + (yyvsp[-2].code_node)->name + std::string(", ") + (yyvsp[0].code_node)->name + std::string("\n");
+    node->name = temp;
     (yyval.code_node) = node;
-      /*
-    // std::string temp = gen_temp();
-    // CodeNode *node = new CodeNode;
-    // node->code = $1->code + $3->code + decl_temp_code(temp);
-    // node->code += std::string("+ ") + temp + std::string(", ") + $1->name + std::string(", ") + $3->name + std::string("\n");
-    // node->name = temp;
-    // $$ = node;
-    */
+    
   }
-#line 1797 "miniL-parser.cpp" /* yacc.c:1646  */
+#line 1815 "miniL-parser.cpp" /* yacc.c:1646  */
     break;
 
   case 39:
-#line 446 "miniL.y" /* yacc.c:1646  */
+#line 444 "miniL.y" /* yacc.c:1646  */
     {
-    // insert intermediate 
+    std::string temp = gen_temp();
     CodeNode *node = new CodeNode;
+    node->code = (yyvsp[-2].code_node)->code + (yyvsp[0].code_node)->code + decl_temp_code(temp);
+    node->code += std::string("- ") + temp + std::string(", ") + (yyvsp[-2].code_node)->name + std::string(", ") + (yyvsp[0].code_node)->name + std::string("\n");
+    node->name = temp;
     (yyval.code_node) = node;
   }
-#line 1807 "miniL-parser.cpp" /* yacc.c:1646  */
+#line 1828 "miniL-parser.cpp" /* yacc.c:1646  */
     break;
 
   case 40:
-#line 454 "miniL.y" /* yacc.c:1646  */
+#line 455 "miniL.y" /* yacc.c:1646  */
     {
     // insert intermediate code
     CodeNode *node = new CodeNode;
     (yyval.code_node) = node;
   }
-#line 1817 "miniL-parser.cpp" /* yacc.c:1646  */
+#line 1838 "miniL-parser.cpp" /* yacc.c:1646  */
     break;
 
   case 41:
-#line 460 "miniL.y" /* yacc.c:1646  */
+#line 461 "miniL.y" /* yacc.c:1646  */
     {
     // insert intermediate code
     CodeNode *node = new CodeNode;
     (yyval.code_node) = node;
   }
-#line 1827 "miniL-parser.cpp" /* yacc.c:1646  */
+#line 1848 "miniL-parser.cpp" /* yacc.c:1646  */
     break;
 
   case 42:
-#line 466 "miniL.y" /* yacc.c:1646  */
+#line 467 "miniL.y" /* yacc.c:1646  */
     {
-    // insert intermediate code
-    CodeNode *node = new CodeNode;
-    (yyval.code_node) = node;
+    (yyval.code_node) = (yyvsp[0].code_node);
   }
-#line 1837 "miniL-parser.cpp" /* yacc.c:1646  */
+#line 1856 "miniL-parser.cpp" /* yacc.c:1646  */
     break;
 
   case 43:
-#line 474 "miniL.y" /* yacc.c:1646  */
+#line 473 "miniL.y" /* yacc.c:1646  */
     {
     // insert intermediate code
-    CodeNode *node = new CodeNode;
+    CodeNode *node = (yyvsp[0].code_node);
     (yyval.code_node) = node;
   }
-#line 1847 "miniL-parser.cpp" /* yacc.c:1646  */
+#line 1866 "miniL-parser.cpp" /* yacc.c:1646  */
     break;
 
   case 44:
-#line 480 "miniL.y" /* yacc.c:1646  */
+#line 479 "miniL.y" /* yacc.c:1646  */
     {
-    // insert intermediate code
+    std::string temp = gen_temp();
     CodeNode *node = new CodeNode;
+    node->code = (yyvsp[-2].code_node)->code + (yyvsp[0].code_node)->code + decl_temp_code(temp);
+    node->code += std::string("* ") + temp + std::string(", ") + (yyvsp[-2].code_node)->name + std::string(", ") + (yyvsp[0].code_node)->name + std::string("\n");
+    node->name = temp;
     (yyval.code_node) = node;
   }
-#line 1857 "miniL-parser.cpp" /* yacc.c:1646  */
+#line 1879 "miniL-parser.cpp" /* yacc.c:1646  */
     break;
 
   case 45:
-#line 486 "miniL.y" /* yacc.c:1646  */
+#line 488 "miniL.y" /* yacc.c:1646  */
     {
-    // insert intermediate code
+    std::string temp = gen_temp();
     CodeNode *node = new CodeNode;
+    node->code = (yyvsp[-2].code_node)->code + (yyvsp[0].code_node)->code + decl_temp_code(temp);
+    node->code += std::string("/ ") + temp + std::string(", ") + (yyvsp[-2].code_node)->name + std::string(", ") + (yyvsp[0].code_node)->name + std::string("\n");
+    node->name = temp;
     (yyval.code_node) = node;
   }
-#line 1867 "miniL-parser.cpp" /* yacc.c:1646  */
+#line 1892 "miniL-parser.cpp" /* yacc.c:1646  */
     break;
 
   case 46:
-#line 492 "miniL.y" /* yacc.c:1646  */
+#line 497 "miniL.y" /* yacc.c:1646  */
     {
-    // insert intermediate code
+    std::string temp = gen_temp();
     CodeNode *node = new CodeNode;
+    node->code = (yyvsp[-2].code_node)->code + (yyvsp[0].code_node)->code + decl_temp_code(temp);
+    node->code += std::string("% ") + temp + std::string(", ") + (yyvsp[-2].code_node)->name + std::string(", ") + (yyvsp[0].code_node)->name + std::string("\n");
+    node->name = temp;
     (yyval.code_node) = node;
   }
-#line 1877 "miniL-parser.cpp" /* yacc.c:1646  */
+#line 1905 "miniL-parser.cpp" /* yacc.c:1646  */
     break;
 
   case 47:
-#line 500 "miniL.y" /* yacc.c:1646  */
+#line 508 "miniL.y" /* yacc.c:1646  */
     {
     // insert intermediate code
-    CodeNode *node = new CodeNode;
+    CodeNode *node = (yyvsp[0].code_node); // add to symbol table
     (yyval.code_node) = node;
   }
-#line 1887 "miniL-parser.cpp" /* yacc.c:1646  */
+#line 1915 "miniL-parser.cpp" /* yacc.c:1646  */
     break;
 
   case 48:
-#line 506 "miniL.y" /* yacc.c:1646  */
+#line 514 "miniL.y" /* yacc.c:1646  */
     {
-    // insert intermediate code
+    std::string id = std::to_string((yyvsp[0].num_val));
     CodeNode *node = new CodeNode;
+    // printf("id: %s", id.c_str()); // debug 
+    node->name = id;
+    node->code = "";
+    node->code += id;
     (yyval.code_node) = node;
   }
-#line 1897 "miniL-parser.cpp" /* yacc.c:1646  */
+#line 1929 "miniL-parser.cpp" /* yacc.c:1646  */
     break;
 
   case 49:
-#line 512 "miniL.y" /* yacc.c:1646  */
+#line 524 "miniL.y" /* yacc.c:1646  */
     {
-    // insert intermediate code
     CodeNode *node = new CodeNode;
+    node->name = (yyvsp[-1].code_node)->name;
+    node->code = (yyvsp[-1].code_node)->code;
     (yyval.code_node) = node;
   }
-#line 1907 "miniL-parser.cpp" /* yacc.c:1646  */
+#line 1940 "miniL-parser.cpp" /* yacc.c:1646  */
     break;
 
   case 50:
-#line 518 "miniL.y" /* yacc.c:1646  */
+#line 531 "miniL.y" /* yacc.c:1646  */
     {
-    // insert intermediate code
     CodeNode *node = new CodeNode;
+    node->name = yylval.ident_val;
+    node->code = (yyvsp[-1].code_node)->code;
     (yyval.code_node) = node;
   }
-#line 1917 "miniL-parser.cpp" /* yacc.c:1646  */
+#line 1951 "miniL-parser.cpp" /* yacc.c:1646  */
     break;
 
   case 51:
-#line 532 "miniL.y" /* yacc.c:1646  */
+#line 546 "miniL.y" /* yacc.c:1646  */
     {
     CodeNode *node = new CodeNode;
+    node->code = (yyvsp[-1].code_node)->code;
+    std::string id = yylval.ident_val;
+    CodeNode *tempNode = (yyvsp[-1].code_node);
+    id += std::string(", ") + std::string(tempNode->name);
+    node->name = id;
     (yyval.code_node) = node;
   }
-#line 1926 "miniL-parser.cpp" /* yacc.c:1646  */
+#line 1965 "miniL-parser.cpp" /* yacc.c:1646  */
     break;
 
   case 52:
-#line 537 "miniL.y" /* yacc.c:1646  */
+#line 556 "miniL.y" /* yacc.c:1646  */
     {
     std::string name = (yyvsp[0].ident_val);
     CodeNode *node = new CodeNode;
@@ -1934,11 +1973,11 @@ yyreduce:
     node->name = name;
     (yyval.code_node) = node;
   }
-#line 1938 "miniL-parser.cpp" /* yacc.c:1646  */
+#line 1977 "miniL-parser.cpp" /* yacc.c:1646  */
     break;
 
 
-#line 1942 "miniL-parser.cpp" /* yacc.c:1646  */
+#line 1981 "miniL-parser.cpp" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -2166,7 +2205,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 546 "miniL.y" /* yacc.c:1906  */
+#line 565 "miniL.y" /* yacc.c:1906  */
  
 
 /* int main(int argc, char **argv) {

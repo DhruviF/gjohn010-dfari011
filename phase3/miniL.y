@@ -44,6 +44,10 @@ Function *get_function() {
   return &symbol_table[last];
 }
 
+std::string decl_temp_code(std::string &temp){
+  return std::string(". ") + temp + std::string("\n");
+}
+
 bool find(std::string &value) {
   Function *f = get_function();
   for(int i=0; i < f->declarations.size(); i++) {
@@ -192,7 +196,7 @@ Function: FUNCTION Ident SEMICOLON BEGIN_PARAMS Declaration_Loop END_PARAMS BEGI
   CodeNode *node = new CodeNode;
   std::string func_name = $2;
   node->code = "";
-  node->code += std::string("func") + func_name + std::string("\n");
+  node->code += std::string("func ") + func_name + std::string("\n");
   // declare the declarations
   CodeNode *params = $5;
   node->code += params->code;
@@ -242,30 +246,9 @@ Declaration_Loop: %empty
   }
 ;
 
-  /* Ident_Loop: Ident
-  {
-    // insert intermediate code
-    std::string id = $1;
-    CodeNode *node = new CodeNode;
-    node->name = id;
-    $$ = node;
-
-  }
-    | Ident COMMA Ident_Loop
-  {
-    // insert intermediate code
-    std::string id = $1;
-    CodeNode *node = new CodeNode;
-    node->name = id;
-    CodeNode *identnode = $3;
-    node->name += identnode->name;
-    $$ = node;
-    
-  } */
 
 Ident:  IDENT
   {
-    // insert intermediate code
     $$ = $1;
   }
 
@@ -288,20 +271,27 @@ Statement_Loop: %empty
 
 Statement: Ident ASSIGN Expression
   {
+    std::string id = $1;
     CodeNode *node = new CodeNode;
+    node->code = $3->code;
+    node->code += std::string("= ") + id + std::string(", ") + $3->name + std::string("\n");
+    node->name = id;
+    $$ = node;
+    
+
+      /* CodeNode *node = new CodeNode;
     std::string id = $1;
     CodeNode *nodeExpr = $3;
-    // printf(id.c_str());
-    node->code = "";      //hard coded: expression.name
+    node->code = "";
     node->code += nodeExpr->code;
-
     node->code = std::string("= ") + id + std::string(", 150\n");
-    // printf("%s \n", node->code.c_str());
     $$ = node;
+    */
   }
     | Ident L_SQUARE_BRACKET Expression R_SQUARE_BRACKET ASSIGN Expression 
   {
     CodeNode *node = new CodeNode;
+
     $$ = node;
   }
     | IF BoolExp THEN Statement_Loop ElseStatement ENDIF
@@ -322,14 +312,17 @@ Statement: Ident ASSIGN Expression
     | READ Var
 	{
     CodeNode *node = new CodeNode;
-    $$ = node;
+      CodeNode *var = $2;
+      std::string id = var->name;
+      node->code = "";
+      node->code += std::string(".< ") + id + std::string("\n");
+      $$ = node;
   }
     | WRITE Var
   {
       CodeNode *node = new CodeNode;
       CodeNode *var = $2;
       std::string id = var->name;
-      // printf(id.c_str());
       node->code = "";
       node->code += std::string(".> ") + id + std::string("\n");
       $$ = node;
@@ -337,16 +330,23 @@ Statement: Ident ASSIGN Expression
     | CONTINUE
 	{
     CodeNode *node = new CodeNode;
+    node->code = "";
+    node->code = std::string("continue\n");
     $$ = node;
   }
     | BREAK
 	{
     CodeNode *node = new CodeNode;
+    node->code = "";
+    node->code = std::string("break\n");
     $$ = node;
   }
     | RETURN Expression
 	{
     CodeNode *node = new CodeNode;
+    CodeNode *expr = $2;
+    node->code = "";
+    node->code += std::string("return ") + expr->name + std::string("\n");
     $$ = node;
   }
 ;
@@ -426,26 +426,27 @@ Comp: EQ
 Expression: Mult_Expr
   {
     // insert intermediate code
-    CodeNode *node = new CodeNode;
+    CodeNode *node = $1;
+    // printf("reached here", node->name.c_str(), node->code.c_str());
     $$ = node;
   }
     | Mult_Expr PLUS Expression
   {
+    std::string temp = gen_temp();
     CodeNode *node = new CodeNode;
+    node->code = $1->code + $3->code + decl_temp_code(temp);
+    node->code += std::string("+ ") + temp + std::string(", ") + $1->name + std::string(", ") + $3->name + std::string("\n");
+    node->name = temp;
     $$ = node;
-      /*
-    // std::string temp = gen_temp();
-    // CodeNode *node = new CodeNode;
-    // node->code = $1->code + $3->code + decl_temp_code(temp);
-    // node->code += std::string("+ ") + temp + std::string(", ") + $1->name + std::string(", ") + $3->name + std::string("\n");
-    // node->name = temp;
-    // $$ = node;
-    */
+    
   }
     | Mult_Expr SUB Expression
 	{
-    // insert intermediate 
+    std::string temp = gen_temp();
     CodeNode *node = new CodeNode;
+    node->code = $1->code + $3->code + decl_temp_code(temp);
+    node->code += std::string("- ") + temp + std::string(", ") + $1->name + std::string(", ") + $3->name + std::string("\n");
+    node->name = temp;
     $$ = node;
   }
 ;
@@ -464,34 +465,41 @@ Expression_Loop:  %empty
   }
     | Expression
   {
-    // insert intermediate code
-    CodeNode *node = new CodeNode;
-    $$ = node;
+    $$ = $1;
   }
 ;
 
 Mult_Expr:  Term
   {
     // insert intermediate code
-    CodeNode *node = new CodeNode;
+    CodeNode *node = $1;
     $$ = node;
   }
     | Term MULT Mult_Expr
   {
-    // insert intermediate code
+    std::string temp = gen_temp();
     CodeNode *node = new CodeNode;
+    node->code = $1->code + $3->code + decl_temp_code(temp);
+    node->code += std::string("* ") + temp + std::string(", ") + $1->name + std::string(", ") + $3->name + std::string("\n");
+    node->name = temp;
     $$ = node;
   }
   | Term DIV Mult_Expr
 	{
-    // insert intermediate code
+    std::string temp = gen_temp();
     CodeNode *node = new CodeNode;
+    node->code = $1->code + $3->code + decl_temp_code(temp);
+    node->code += std::string("/ ") + temp + std::string(", ") + $1->name + std::string(", ") + $3->name + std::string("\n");
+    node->name = temp;
     $$ = node;
   }
     | Term MOD Mult_Expr
   {
-    // insert intermediate code
+    std::string temp = gen_temp();
     CodeNode *node = new CodeNode;
+    node->code = $1->code + $3->code + decl_temp_code(temp);
+    node->code += std::string("% ") + temp + std::string(", ") + $1->name + std::string(", ") + $3->name + std::string("\n");
+    node->name = temp;
     $$ = node;
   }
 ;
@@ -499,25 +507,31 @@ Mult_Expr:  Term
 Term: Var
   {
     // insert intermediate code
-    CodeNode *node = new CodeNode;
+    CodeNode *node = $1; // add to symbol table
     $$ = node;
   }
     | NUMBER
   {
-    // insert intermediate code
+    std::string id = std::to_string($1);
     CodeNode *node = new CodeNode;
+    // printf("id: %s", id.c_str()); // debug 
+    node->name = id;
+    node->code = "";
+    node->code += id;
     $$ = node;
   }
     | L_PAREN Expression R_PAREN
   {
-    // insert intermediate code
     CodeNode *node = new CodeNode;
+    node->name = $2->name;
+    node->code = $2->code;
     $$ = node;
   }
     | Ident L_PAREN Expression_Loop R_PAREN
   {
-    // insert intermediate code
     CodeNode *node = new CodeNode;
+    node->name = yylval.ident_val;
+    node->code = $3->code;
     $$ = node;
   } 
     /* | Ident COMMA Ident
@@ -531,6 +545,11 @@ Term: Var
 Var:  Ident L_SQUARE_BRACKET Expression R_SQUARE_BRACKET
   {
     CodeNode *node = new CodeNode;
+    node->code = $3->code;
+    std::string id = yylval.ident_val;
+    CodeNode *tempNode = $3;
+    id += std::string(", ") + std::string(tempNode->name);
+    node->name = id;
     $$ = node;
   }
     | Ident
