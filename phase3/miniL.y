@@ -36,7 +36,12 @@ std::stringstream out;
 
 std::string gen_temp() {
   static int count = 0;
-  return "__temp__" + std ::to_string(count++);
+  return "__temp__" + std::to_string(count++);
+}
+
+std::string gen_label() {
+  static int count = 0;
+  return "__label__" + std::to_string(count++);
 }
 
 Function *get_function() {
@@ -100,7 +105,7 @@ void print_symbol_table(void) {
 %start Program
 
 %token <ident_val> IDENT
-%token <num_val> NUMBER
+%token <ident_val> NUMBER
 
 %left EQ
 %left ASSIGN
@@ -162,6 +167,9 @@ void print_symbol_table(void) {
 %type <code_node> Mult_Expr
 %type <code_node> Comp
 %type <code_node> Term
+%type <code_node> BoolExpression
+%type <code_node> BoolExp
+%type <code_node> ElseStatement
 
 %type <ident_val> Ident
 // %type <ident_val> Ident_Loop
@@ -277,26 +285,28 @@ Statement: Ident ASSIGN Expression
     node->code += std::string("= ") + id + std::string(", ") + $3->name + std::string("\n");
     node->name = id;
     $$ = node;
-    
-
-      /* CodeNode *node = new CodeNode;
-    std::string id = $1;
-    CodeNode *nodeExpr = $3;
-    node->code = "";
-    node->code += nodeExpr->code;
-    node->code = std::string("= ") + id + std::string(", 150\n");
-    $$ = node;
-    */
   }
     | Ident L_SQUARE_BRACKET Expression R_SQUARE_BRACKET ASSIGN Expression 
   {
     CodeNode *node = new CodeNode;
-
     $$ = node;
   }
     | IF BoolExp THEN Statement_Loop ElseStatement ENDIF
   {
-    CodeNode *node = new CodeNode;
+    CodeNode *node = new CodeNode; 
+    CodeNode *expr = $2;
+    CodeNode *statement= $4;
+    CodeNode *elsestate = $5;
+    std::string temp1 = gen_label();
+    std::string temp2 = gen_label();
+
+    node->code = expr->code + std::string("?:= ") + temp1 + std::string(", ") + expr->name + std::string("\n");
+
+    node->code += elsestate->code + std::string(":= ") + temp2 + std::string("\n");
+    node->code += elsestate->code + std::string(": ") + temp1 + std::string("\n");
+
+    node->code += statement->code + std::string(":= ") + temp2 + std::string("\n");
+
     $$ = node;
   }		 
     | WHILE BoolExp BEGINLOOP Statement_Loop ENDLOOP
@@ -353,22 +363,29 @@ Statement: Ident ASSIGN Expression
 
 ElseStatement:  %empty
   {
-    // insert intermediate code
-    
+    CodeNode *node = new CodeNode;
+    $$ = node;
   }
     | ELSE Statement_Loop
 	{
-    // insert intermediate code
+    $$ = $2;
   }
 ;
 
 BoolExp:  NOT BoolExpression
-  {
-    // insert intermediate code
+  {   
+      CodeNode *node = new CodeNode;
+      CodeNode *expr = $2;
+      std::string temp = gen_temp();
+      node->name = temp;
+      node->code = expr->code + decl_temp_code(temp);
+      node->code += std::string("! ") + temp + std::string(", ") + expr->name + std::string("\n");
+      $$ = node; 
+
   }
     | BoolExpression
   {
-    // insert intermediate code
+    $$ = $1;
   }
 
 ;
@@ -376,49 +393,58 @@ BoolExp:  NOT BoolExpression
 BoolExpression: Expression Comp Expression
   {
     // insert intermediate code
-  }
-    | TRUE
-  {
-    // insert intermediate code
-  }
-    | FALSE
-  {
-    // insert intermediate code
+    CodeNode *node = new CodeNode;
+    CodeNode *expr1 = $1;
+    CodeNode *operation = $2;
+    CodeNode *expr2 = $3;
+    std::string temp = gen_temp();
+    node->name = temp;
+    node->code = expr1->code + expr2->code + decl_temp_code(temp);
+    node->code += operation->name + temp + std::string(", ") + expr1->name + std::string(", ") + expr2->name + std::string("\n");
+    $$ = node;
   }
     | L_PAREN BoolExp R_PAREN
   {
     // insert intermediate code
+    CodeNode *node = new CodeNode;
+    $$ = node;
   }
 ;
 
 Comp: EQ
   {
     CodeNode *node = new CodeNode;
+    node->name = std::string("== ");
     $$ = node;
   }
     | NEQ
   {
     CodeNode *node = new CodeNode;
+    node->name = std::string("!= ");
     $$ = node;
   }
     | LT
   {
     CodeNode *node = new CodeNode;
+    node->name = std::string("< ");
     $$ = node;
   }
     | GT
   {
     CodeNode *node = new CodeNode;
+    node->name = std::string("> ");
     $$ = node;
   }
     | LTE
   {
     CodeNode *node = new CodeNode;
+    node->name = std::string("<= ");
     $$ = node;
   }
     | GTE
   {
     CodeNode *node = new CodeNode;
+    node->name = std::string(">= ");
     $$ = node;
   }
 ;
@@ -512,12 +538,12 @@ Term: Var
   }
     | NUMBER
   {
-    std::string id = std::to_string($1);
+    std::string id = $1;
     CodeNode *node = new CodeNode;
     // printf("id: %s", id.c_str()); // debug 
     node->name = id;
     node->code = "";
-    node->code += id;
+    // node->code += id;
     $$ = node;
   }
     | L_PAREN Expression R_PAREN

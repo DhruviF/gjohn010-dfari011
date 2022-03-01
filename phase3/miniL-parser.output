@@ -1,3 +1,9 @@
+Terminals unused in grammar
+
+   TRUE
+   FALSE
+
+
 Grammar
 
     0 $accept: Program $end
@@ -38,37 +44,35 @@ Grammar
    25        | BoolExpression
 
    26 BoolExpression: Expression Comp Expression
-   27               | TRUE
-   28               | FALSE
-   29               | L_PAREN BoolExp R_PAREN
+   27               | L_PAREN BoolExp R_PAREN
 
-   30 Comp: EQ
-   31     | NEQ
-   32     | LT
-   33     | GT
-   34     | LTE
-   35     | GTE
+   28 Comp: EQ
+   29     | NEQ
+   30     | LT
+   31     | GT
+   32     | LTE
+   33     | GTE
 
-   36 Expression: Mult_Expr
-   37           | Mult_Expr PLUS Expression
-   38           | Mult_Expr SUB Expression
+   34 Expression: Mult_Expr
+   35           | Mult_Expr PLUS Expression
+   36           | Mult_Expr SUB Expression
 
-   39 Expression_Loop: %empty
-   40                | Expression COMMA Expression_Loop
-   41                | Expression
+   37 Expression_Loop: %empty
+   38                | Expression COMMA Expression_Loop
+   39                | Expression
 
-   42 Mult_Expr: Term
-   43          | Term MULT Mult_Expr
-   44          | Term DIV Mult_Expr
-   45          | Term MOD Mult_Expr
+   40 Mult_Expr: Term
+   41          | Term MULT Mult_Expr
+   42          | Term DIV Mult_Expr
+   43          | Term MOD Mult_Expr
 
-   46 Term: Var
-   47     | NUMBER
-   48     | L_PAREN Expression R_PAREN
-   49     | Ident L_PAREN Expression_Loop R_PAREN
+   44 Term: Var
+   45     | NUMBER
+   46     | L_PAREN Expression R_PAREN
+   47     | Ident L_PAREN Expression_Loop R_PAREN
 
-   50 Var: Ident L_SQUARE_BRACKET Expression R_SQUARE_BRACKET
-   51    | Ident
+   48 Var: Ident L_SQUARE_BRACKET Expression R_SQUARE_BRACKET
+   49    | Ident
 
 
 Terminals, with rules where they appear
@@ -76,26 +80,26 @@ Terminals, with rules where they appear
 $end (0) 0
 error (256)
 IDENT (258) 9
-NUMBER (259) 6 47
-EQ (260) 30
+NUMBER (259) 6 45
+EQ (260) 28
 ASSIGN (261) 12 13
-PLUS (262) 37
-SUB (263) 38
-MULT (264) 43
-DIV (265) 44
-L_PAREN (266) 29 48 49
-R_PAREN (267) 29 48 49
+PLUS (262) 35
+SUB (263) 36
+MULT (264) 41
+DIV (265) 42
+L_PAREN (266) 27 46 47
+R_PAREN (267) 27 46 47
 SEMICOLON (268) 4 8 11
 COLON (269) 5 6
-LT (270) 32
-LTE (271) 34
-GT (272) 33
-GTE (273) 35
-L_SQUARE_BRACKET (274) 6 13 50
-R_SQUARE_BRACKET (275) 6 13 50
-MOD (276) 45
-NEQ (277) 31
-COMMA (278) 40
+LT (270) 30
+LTE (271) 32
+GT (272) 31
+GTE (273) 33
+L_SQUARE_BRACKET (274) 6 13 48
+R_SQUARE_BRACKET (275) 6 13 48
+MOD (276) 43
+NEQ (277) 29
+COMMA (278) 38
 IF (279) 14
 ENDIF (280) 14
 WHILE (281) 15 16
@@ -109,8 +113,8 @@ OF (288) 6
 CONTINUE (289) 19
 BREAK (290) 20
 NOT (291) 24
-TRUE (292) 27
-FALSE (293) 28
+TRUE (292)
+FALSE (293)
 RETURN (294) 21
 BEGINLOOP (295) 15 16
 ENDLOOP (296) 15 16
@@ -139,7 +143,7 @@ Declaration (54)
 Declaration_Loop (55)
     on left: 7 8, on right: 4 8
 Ident (56)
-    on left: 9, on right: 4 5 6 12 13 49 50 51
+    on left: 9, on right: 4 5 6 12 13 47 48 49
 Statement_Loop (57)
     on left: 10 11, on right: 4 11 14 15 16 23
 Statement (58)
@@ -147,21 +151,21 @@ Statement (58)
 ElseStatement (59)
     on left: 22 23, on right: 14
 BoolExp (60)
-    on left: 24 25, on right: 14 15 16 29
+    on left: 24 25, on right: 14 15 16 27
 BoolExpression (61)
-    on left: 26 27 28 29, on right: 24 25
+    on left: 26 27, on right: 24 25
 Comp (62)
-    on left: 30 31 32 33 34 35, on right: 26
+    on left: 28 29 30 31 32 33, on right: 26
 Expression (63)
-    on left: 36 37 38, on right: 12 13 21 26 37 38 40 41 48 50
+    on left: 34 35 36, on right: 12 13 21 26 35 36 38 39 46 48
 Expression_Loop (64)
-    on left: 39 40 41, on right: 40 49
+    on left: 37 38 39, on right: 38 47
 Mult_Expr (65)
-    on left: 42 43 44 45, on right: 36 37 38 43 44 45
+    on left: 40 41 42 43, on right: 34 35 36 41 42 43
 Term (66)
-    on left: 46 47 48 49, on right: 42 43 44 45
+    on left: 44 45 46 47, on right: 40 41 42 43
 Var (67)
-    on left: 50 51, on right: 17 18 46
+    on left: 48 49, on right: 17 18 44
 
 
 State 0
@@ -409,16 +413,14 @@ State 27
     NUMBER   shift, and go to state 39
     L_PAREN  shift, and go to state 40
     NOT      shift, and go to state 41
-    TRUE     shift, and go to state 42
-    FALSE    shift, and go to state 43
 
-    Ident           go to state 44
-    BoolExp         go to state 45
-    BoolExpression  go to state 46
-    Expression      go to state 47
-    Mult_Expr       go to state 48
-    Term            go to state 49
-    Var             go to state 50
+    Ident           go to state 42
+    BoolExp         go to state 43
+    BoolExpression  go to state 44
+    Expression      go to state 45
+    Mult_Expr       go to state 46
+    Term            go to state 47
+    Var             go to state 48
 
 
 State 28
@@ -429,16 +431,14 @@ State 28
     NUMBER   shift, and go to state 39
     L_PAREN  shift, and go to state 40
     NOT      shift, and go to state 41
-    TRUE     shift, and go to state 42
-    FALSE    shift, and go to state 43
 
-    Ident           go to state 44
-    BoolExp         go to state 51
-    BoolExpression  go to state 46
-    Expression      go to state 47
-    Mult_Expr       go to state 48
-    Term            go to state 49
-    Var             go to state 50
+    Ident           go to state 42
+    BoolExp         go to state 49
+    BoolExpression  go to state 44
+    Expression      go to state 45
+    Mult_Expr       go to state 46
+    Term            go to state 47
+    Var             go to state 48
 
 
 State 29
@@ -447,8 +447,8 @@ State 29
 
     IDENT  shift, and go to state 5
 
-    Ident  go to state 52
-    Var    go to state 53
+    Ident  go to state 50
+    Var    go to state 51
 
 
 State 30
@@ -457,8 +457,8 @@ State 30
 
     IDENT  shift, and go to state 5
 
-    Ident  go to state 52
-    Var    go to state 54
+    Ident  go to state 50
+    Var    go to state 52
 
 
 State 31
@@ -481,20 +481,20 @@ State 33
 
     IDENT    shift, and go to state 5
     NUMBER   shift, and go to state 39
-    L_PAREN  shift, and go to state 55
+    L_PAREN  shift, and go to state 53
 
-    Ident       go to state 44
-    Expression  go to state 56
-    Mult_Expr   go to state 48
-    Term        go to state 49
-    Var         go to state 50
+    Ident       go to state 42
+    Expression  go to state 54
+    Mult_Expr   go to state 46
+    Term        go to state 47
+    Var         go to state 48
 
 
 State 34
 
    16 Statement: DO . BEGINLOOP Statement_Loop ENDLOOP WHILE BoolExp
 
-    BEGINLOOP  shift, and go to state 57
+    BEGINLOOP  shift, and go to state 55
 
 
 State 35
@@ -502,57 +502,55 @@ State 35
    12 Statement: Ident . ASSIGN Expression
    13          | Ident . L_SQUARE_BRACKET Expression R_SQUARE_BRACKET ASSIGN Expression
 
-    ASSIGN            shift, and go to state 58
-    L_SQUARE_BRACKET  shift, and go to state 59
+    ASSIGN            shift, and go to state 56
+    L_SQUARE_BRACKET  shift, and go to state 57
 
 
 State 36
 
     4 Function: FUNCTION Ident SEMICOLON BEGIN_PARAMS Declaration_Loop END_PARAMS BEGIN_LOCALS Declaration_Loop END_LOCALS BEGIN_BODY Statement_Loop . END_BODY
 
-    END_BODY  shift, and go to state 60
+    END_BODY  shift, and go to state 58
 
 
 State 37
 
    11 Statement_Loop: Statement . SEMICOLON Statement_Loop
 
-    SEMICOLON  shift, and go to state 61
+    SEMICOLON  shift, and go to state 59
 
 
 State 38
 
     6 Declaration: Ident COLON ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF . INTEGER
 
-    INTEGER  shift, and go to state 62
+    INTEGER  shift, and go to state 60
 
 
 State 39
 
-   47 Term: NUMBER .
+   45 Term: NUMBER .
 
-    $default  reduce using rule 47 (Term)
+    $default  reduce using rule 45 (Term)
 
 
 State 40
 
-   29 BoolExpression: L_PAREN . BoolExp R_PAREN
-   48 Term: L_PAREN . Expression R_PAREN
+   27 BoolExpression: L_PAREN . BoolExp R_PAREN
+   46 Term: L_PAREN . Expression R_PAREN
 
     IDENT    shift, and go to state 5
     NUMBER   shift, and go to state 39
     L_PAREN  shift, and go to state 40
     NOT      shift, and go to state 41
-    TRUE     shift, and go to state 42
-    FALSE    shift, and go to state 43
 
-    Ident           go to state 44
-    BoolExp         go to state 63
-    BoolExpression  go to state 46
-    Expression      go to state 64
-    Mult_Expr       go to state 48
-    Term            go to state 49
-    Var             go to state 50
+    Ident           go to state 42
+    BoolExp         go to state 61
+    BoolExpression  go to state 44
+    Expression      go to state 62
+    Mult_Expr       go to state 46
+    Term            go to state 47
+    Var             go to state 48
 
 
 State 41
@@ -562,158 +560,142 @@ State 41
     IDENT    shift, and go to state 5
     NUMBER   shift, and go to state 39
     L_PAREN  shift, and go to state 40
-    TRUE     shift, and go to state 42
-    FALSE    shift, and go to state 43
 
-    Ident           go to state 44
-    BoolExpression  go to state 65
-    Expression      go to state 47
-    Mult_Expr       go to state 48
-    Term            go to state 49
-    Var             go to state 50
+    Ident           go to state 42
+    BoolExpression  go to state 63
+    Expression      go to state 45
+    Mult_Expr       go to state 46
+    Term            go to state 47
+    Var             go to state 48
 
 
 State 42
 
-   27 BoolExpression: TRUE .
+   47 Term: Ident . L_PAREN Expression_Loop R_PAREN
+   48 Var: Ident . L_SQUARE_BRACKET Expression R_SQUARE_BRACKET
+   49    | Ident .
 
-    $default  reduce using rule 27 (BoolExpression)
+    L_PAREN           shift, and go to state 64
+    L_SQUARE_BRACKET  shift, and go to state 65
+
+    $default  reduce using rule 49 (Var)
 
 
 State 43
 
-   28 BoolExpression: FALSE .
+   14 Statement: IF BoolExp . THEN Statement_Loop ElseStatement ENDIF
 
-    $default  reduce using rule 28 (BoolExpression)
+    THEN  shift, and go to state 66
 
 
 State 44
-
-   49 Term: Ident . L_PAREN Expression_Loop R_PAREN
-   50 Var: Ident . L_SQUARE_BRACKET Expression R_SQUARE_BRACKET
-   51    | Ident .
-
-    L_PAREN           shift, and go to state 66
-    L_SQUARE_BRACKET  shift, and go to state 67
-
-    $default  reduce using rule 51 (Var)
-
-
-State 45
-
-   14 Statement: IF BoolExp . THEN Statement_Loop ElseStatement ENDIF
-
-    THEN  shift, and go to state 68
-
-
-State 46
 
    25 BoolExp: BoolExpression .
 
     $default  reduce using rule 25 (BoolExp)
 
 
-State 47
+State 45
 
    26 BoolExpression: Expression . Comp Expression
 
-    EQ   shift, and go to state 69
-    LT   shift, and go to state 70
-    LTE  shift, and go to state 71
-    GT   shift, and go to state 72
-    GTE  shift, and go to state 73
-    NEQ  shift, and go to state 74
+    EQ   shift, and go to state 67
+    LT   shift, and go to state 68
+    LTE  shift, and go to state 69
+    GT   shift, and go to state 70
+    GTE  shift, and go to state 71
+    NEQ  shift, and go to state 72
 
-    Comp  go to state 75
+    Comp  go to state 73
+
+
+State 46
+
+   34 Expression: Mult_Expr .
+   35           | Mult_Expr . PLUS Expression
+   36           | Mult_Expr . SUB Expression
+
+    PLUS  shift, and go to state 74
+    SUB   shift, and go to state 75
+
+    $default  reduce using rule 34 (Expression)
+
+
+State 47
+
+   40 Mult_Expr: Term .
+   41          | Term . MULT Mult_Expr
+   42          | Term . DIV Mult_Expr
+   43          | Term . MOD Mult_Expr
+
+    MULT  shift, and go to state 76
+    DIV   shift, and go to state 77
+    MOD   shift, and go to state 78
+
+    $default  reduce using rule 40 (Mult_Expr)
 
 
 State 48
 
-   36 Expression: Mult_Expr .
-   37           | Mult_Expr . PLUS Expression
-   38           | Mult_Expr . SUB Expression
+   44 Term: Var .
 
-    PLUS  shift, and go to state 76
-    SUB   shift, and go to state 77
-
-    $default  reduce using rule 36 (Expression)
+    $default  reduce using rule 44 (Term)
 
 
 State 49
 
-   42 Mult_Expr: Term .
-   43          | Term . MULT Mult_Expr
-   44          | Term . DIV Mult_Expr
-   45          | Term . MOD Mult_Expr
+   15 Statement: WHILE BoolExp . BEGINLOOP Statement_Loop ENDLOOP
 
-    MULT  shift, and go to state 78
-    DIV   shift, and go to state 79
-    MOD   shift, and go to state 80
-
-    $default  reduce using rule 42 (Mult_Expr)
+    BEGINLOOP  shift, and go to state 79
 
 
 State 50
 
-   46 Term: Var .
+   48 Var: Ident . L_SQUARE_BRACKET Expression R_SQUARE_BRACKET
+   49    | Ident .
 
-    $default  reduce using rule 46 (Term)
+    L_SQUARE_BRACKET  shift, and go to state 65
+
+    $default  reduce using rule 49 (Var)
 
 
 State 51
-
-   15 Statement: WHILE BoolExp . BEGINLOOP Statement_Loop ENDLOOP
-
-    BEGINLOOP  shift, and go to state 81
-
-
-State 52
-
-   50 Var: Ident . L_SQUARE_BRACKET Expression R_SQUARE_BRACKET
-   51    | Ident .
-
-    L_SQUARE_BRACKET  shift, and go to state 67
-
-    $default  reduce using rule 51 (Var)
-
-
-State 53
 
    17 Statement: READ Var .
 
     $default  reduce using rule 17 (Statement)
 
 
-State 54
+State 52
 
    18 Statement: WRITE Var .
 
     $default  reduce using rule 18 (Statement)
 
 
-State 55
+State 53
 
-   48 Term: L_PAREN . Expression R_PAREN
+   46 Term: L_PAREN . Expression R_PAREN
 
     IDENT    shift, and go to state 5
     NUMBER   shift, and go to state 39
-    L_PAREN  shift, and go to state 55
+    L_PAREN  shift, and go to state 53
 
-    Ident       go to state 44
-    Expression  go to state 82
-    Mult_Expr   go to state 48
-    Term        go to state 49
-    Var         go to state 50
+    Ident       go to state 42
+    Expression  go to state 80
+    Mult_Expr   go to state 46
+    Term        go to state 47
+    Var         go to state 48
 
 
-State 56
+State 54
 
    21 Statement: RETURN Expression .
 
     $default  reduce using rule 21 (Statement)
 
 
-State 57
+State 55
 
    16 Statement: DO BEGINLOOP . Statement_Loop ENDLOOP WHILE BoolExp
 
@@ -730,48 +712,48 @@ State 57
     $default  reduce using rule 10 (Statement_Loop)
 
     Ident           go to state 35
-    Statement_Loop  go to state 83
+    Statement_Loop  go to state 81
     Statement       go to state 37
 
 
-State 58
+State 56
 
    12 Statement: Ident ASSIGN . Expression
 
     IDENT    shift, and go to state 5
     NUMBER   shift, and go to state 39
-    L_PAREN  shift, and go to state 55
+    L_PAREN  shift, and go to state 53
 
-    Ident       go to state 44
-    Expression  go to state 84
-    Mult_Expr   go to state 48
-    Term        go to state 49
-    Var         go to state 50
+    Ident       go to state 42
+    Expression  go to state 82
+    Mult_Expr   go to state 46
+    Term        go to state 47
+    Var         go to state 48
 
 
-State 59
+State 57
 
    13 Statement: Ident L_SQUARE_BRACKET . Expression R_SQUARE_BRACKET ASSIGN Expression
 
     IDENT    shift, and go to state 5
     NUMBER   shift, and go to state 39
-    L_PAREN  shift, and go to state 55
+    L_PAREN  shift, and go to state 53
 
-    Ident       go to state 44
-    Expression  go to state 85
-    Mult_Expr   go to state 48
-    Term        go to state 49
-    Var         go to state 50
+    Ident       go to state 42
+    Expression  go to state 83
+    Mult_Expr   go to state 46
+    Term        go to state 47
+    Var         go to state 48
 
 
-State 60
+State 58
 
     4 Function: FUNCTION Ident SEMICOLON BEGIN_PARAMS Declaration_Loop END_PARAMS BEGIN_LOCALS Declaration_Loop END_LOCALS BEGIN_BODY Statement_Loop END_BODY .
 
     $default  reduce using rule 4 (Function)
 
 
-State 61
+State 59
 
    11 Statement_Loop: Statement SEMICOLON . Statement_Loop
 
@@ -788,81 +770,81 @@ State 61
     $default  reduce using rule 10 (Statement_Loop)
 
     Ident           go to state 35
-    Statement_Loop  go to state 86
+    Statement_Loop  go to state 84
     Statement       go to state 37
 
 
-State 62
+State 60
 
     6 Declaration: Ident COLON ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF INTEGER .
 
     $default  reduce using rule 6 (Declaration)
 
 
-State 63
+State 61
 
-   29 BoolExpression: L_PAREN BoolExp . R_PAREN
+   27 BoolExpression: L_PAREN BoolExp . R_PAREN
 
-    R_PAREN  shift, and go to state 87
+    R_PAREN  shift, and go to state 85
 
 
-State 64
+State 62
 
    26 BoolExpression: Expression . Comp Expression
-   48 Term: L_PAREN Expression . R_PAREN
+   46 Term: L_PAREN Expression . R_PAREN
 
-    EQ       shift, and go to state 69
-    R_PAREN  shift, and go to state 88
-    LT       shift, and go to state 70
-    LTE      shift, and go to state 71
-    GT       shift, and go to state 72
-    GTE      shift, and go to state 73
-    NEQ      shift, and go to state 74
+    EQ       shift, and go to state 67
+    R_PAREN  shift, and go to state 86
+    LT       shift, and go to state 68
+    LTE      shift, and go to state 69
+    GT       shift, and go to state 70
+    GTE      shift, and go to state 71
+    NEQ      shift, and go to state 72
 
-    Comp  go to state 75
+    Comp  go to state 73
 
 
-State 65
+State 63
 
    24 BoolExp: NOT BoolExpression .
 
     $default  reduce using rule 24 (BoolExp)
 
 
+State 64
+
+   47 Term: Ident L_PAREN . Expression_Loop R_PAREN
+
+    IDENT    shift, and go to state 5
+    NUMBER   shift, and go to state 39
+    L_PAREN  shift, and go to state 53
+
+    $default  reduce using rule 37 (Expression_Loop)
+
+    Ident            go to state 42
+    Expression       go to state 87
+    Expression_Loop  go to state 88
+    Mult_Expr        go to state 46
+    Term             go to state 47
+    Var              go to state 48
+
+
+State 65
+
+   48 Var: Ident L_SQUARE_BRACKET . Expression R_SQUARE_BRACKET
+
+    IDENT    shift, and go to state 5
+    NUMBER   shift, and go to state 39
+    L_PAREN  shift, and go to state 53
+
+    Ident       go to state 42
+    Expression  go to state 89
+    Mult_Expr   go to state 46
+    Term        go to state 47
+    Var         go to state 48
+
+
 State 66
-
-   49 Term: Ident L_PAREN . Expression_Loop R_PAREN
-
-    IDENT    shift, and go to state 5
-    NUMBER   shift, and go to state 39
-    L_PAREN  shift, and go to state 55
-
-    $default  reduce using rule 39 (Expression_Loop)
-
-    Ident            go to state 44
-    Expression       go to state 89
-    Expression_Loop  go to state 90
-    Mult_Expr        go to state 48
-    Term             go to state 49
-    Var              go to state 50
-
-
-State 67
-
-   50 Var: Ident L_SQUARE_BRACKET . Expression R_SQUARE_BRACKET
-
-    IDENT    shift, and go to state 5
-    NUMBER   shift, and go to state 39
-    L_PAREN  shift, and go to state 55
-
-    Ident       go to state 44
-    Expression  go to state 91
-    Mult_Expr   go to state 48
-    Term        go to state 49
-    Var         go to state 50
-
-
-State 68
 
    14 Statement: IF BoolExp THEN . Statement_Loop ElseStatement ENDIF
 
@@ -879,140 +861,140 @@ State 68
     $default  reduce using rule 10 (Statement_Loop)
 
     Ident           go to state 35
-    Statement_Loop  go to state 92
+    Statement_Loop  go to state 90
     Statement       go to state 37
 
 
-State 69
+State 67
 
-   30 Comp: EQ .
+   28 Comp: EQ .
+
+    $default  reduce using rule 28 (Comp)
+
+
+State 68
+
+   30 Comp: LT .
 
     $default  reduce using rule 30 (Comp)
 
 
-State 70
+State 69
 
-   32 Comp: LT .
+   32 Comp: LTE .
 
     $default  reduce using rule 32 (Comp)
 
 
-State 71
+State 70
 
-   34 Comp: LTE .
-
-    $default  reduce using rule 34 (Comp)
-
-
-State 72
-
-   33 Comp: GT .
-
-    $default  reduce using rule 33 (Comp)
-
-
-State 73
-
-   35 Comp: GTE .
-
-    $default  reduce using rule 35 (Comp)
-
-
-State 74
-
-   31 Comp: NEQ .
+   31 Comp: GT .
 
     $default  reduce using rule 31 (Comp)
 
 
-State 75
+State 71
+
+   33 Comp: GTE .
+
+    $default  reduce using rule 33 (Comp)
+
+
+State 72
+
+   29 Comp: NEQ .
+
+    $default  reduce using rule 29 (Comp)
+
+
+State 73
 
    26 BoolExpression: Expression Comp . Expression
 
     IDENT    shift, and go to state 5
     NUMBER   shift, and go to state 39
-    L_PAREN  shift, and go to state 55
+    L_PAREN  shift, and go to state 53
 
-    Ident       go to state 44
+    Ident       go to state 42
+    Expression  go to state 91
+    Mult_Expr   go to state 46
+    Term        go to state 47
+    Var         go to state 48
+
+
+State 74
+
+   35 Expression: Mult_Expr PLUS . Expression
+
+    IDENT    shift, and go to state 5
+    NUMBER   shift, and go to state 39
+    L_PAREN  shift, and go to state 53
+
+    Ident       go to state 42
+    Expression  go to state 92
+    Mult_Expr   go to state 46
+    Term        go to state 47
+    Var         go to state 48
+
+
+State 75
+
+   36 Expression: Mult_Expr SUB . Expression
+
+    IDENT    shift, and go to state 5
+    NUMBER   shift, and go to state 39
+    L_PAREN  shift, and go to state 53
+
+    Ident       go to state 42
     Expression  go to state 93
-    Mult_Expr   go to state 48
-    Term        go to state 49
-    Var         go to state 50
+    Mult_Expr   go to state 46
+    Term        go to state 47
+    Var         go to state 48
 
 
 State 76
 
-   37 Expression: Mult_Expr PLUS . Expression
+   41 Mult_Expr: Term MULT . Mult_Expr
 
     IDENT    shift, and go to state 5
     NUMBER   shift, and go to state 39
-    L_PAREN  shift, and go to state 55
+    L_PAREN  shift, and go to state 53
 
-    Ident       go to state 44
-    Expression  go to state 94
-    Mult_Expr   go to state 48
-    Term        go to state 49
-    Var         go to state 50
+    Ident      go to state 42
+    Mult_Expr  go to state 94
+    Term       go to state 47
+    Var        go to state 48
 
 
 State 77
 
-   38 Expression: Mult_Expr SUB . Expression
+   42 Mult_Expr: Term DIV . Mult_Expr
 
     IDENT    shift, and go to state 5
     NUMBER   shift, and go to state 39
-    L_PAREN  shift, and go to state 55
+    L_PAREN  shift, and go to state 53
 
-    Ident       go to state 44
-    Expression  go to state 95
-    Mult_Expr   go to state 48
-    Term        go to state 49
-    Var         go to state 50
+    Ident      go to state 42
+    Mult_Expr  go to state 95
+    Term       go to state 47
+    Var        go to state 48
 
 
 State 78
 
-   43 Mult_Expr: Term MULT . Mult_Expr
+   43 Mult_Expr: Term MOD . Mult_Expr
 
     IDENT    shift, and go to state 5
     NUMBER   shift, and go to state 39
-    L_PAREN  shift, and go to state 55
+    L_PAREN  shift, and go to state 53
 
-    Ident      go to state 44
+    Ident      go to state 42
     Mult_Expr  go to state 96
-    Term       go to state 49
-    Var        go to state 50
+    Term       go to state 47
+    Var        go to state 48
 
 
 State 79
-
-   44 Mult_Expr: Term DIV . Mult_Expr
-
-    IDENT    shift, and go to state 5
-    NUMBER   shift, and go to state 39
-    L_PAREN  shift, and go to state 55
-
-    Ident      go to state 44
-    Mult_Expr  go to state 97
-    Term       go to state 49
-    Var        go to state 50
-
-
-State 80
-
-   45 Mult_Expr: Term MOD . Mult_Expr
-
-    IDENT    shift, and go to state 5
-    NUMBER   shift, and go to state 39
-    L_PAREN  shift, and go to state 55
-
-    Ident      go to state 44
-    Mult_Expr  go to state 98
-    Term       go to state 49
-    Var        go to state 50
-
-
-State 81
 
    15 Statement: WHILE BoolExp BEGINLOOP . Statement_Loop ENDLOOP
 
@@ -1029,190 +1011,190 @@ State 81
     $default  reduce using rule 10 (Statement_Loop)
 
     Ident           go to state 35
-    Statement_Loop  go to state 99
+    Statement_Loop  go to state 97
     Statement       go to state 37
 
 
-State 82
+State 80
 
-   48 Term: L_PAREN Expression . R_PAREN
+   46 Term: L_PAREN Expression . R_PAREN
 
-    R_PAREN  shift, and go to state 88
+    R_PAREN  shift, and go to state 86
 
 
-State 83
+State 81
 
    16 Statement: DO BEGINLOOP Statement_Loop . ENDLOOP WHILE BoolExp
 
-    ENDLOOP  shift, and go to state 100
+    ENDLOOP  shift, and go to state 98
 
 
-State 84
+State 82
 
    12 Statement: Ident ASSIGN Expression .
 
     $default  reduce using rule 12 (Statement)
 
 
-State 85
+State 83
 
    13 Statement: Ident L_SQUARE_BRACKET Expression . R_SQUARE_BRACKET ASSIGN Expression
 
-    R_SQUARE_BRACKET  shift, and go to state 101
+    R_SQUARE_BRACKET  shift, and go to state 99
 
 
-State 86
+State 84
 
    11 Statement_Loop: Statement SEMICOLON Statement_Loop .
 
     $default  reduce using rule 11 (Statement_Loop)
 
 
+State 85
+
+   27 BoolExpression: L_PAREN BoolExp R_PAREN .
+
+    $default  reduce using rule 27 (BoolExpression)
+
+
+State 86
+
+   46 Term: L_PAREN Expression R_PAREN .
+
+    $default  reduce using rule 46 (Term)
+
+
 State 87
 
-   29 BoolExpression: L_PAREN BoolExp R_PAREN .
+   38 Expression_Loop: Expression . COMMA Expression_Loop
+   39                | Expression .
 
-    $default  reduce using rule 29 (BoolExpression)
+    COMMA  shift, and go to state 100
+
+    $default  reduce using rule 39 (Expression_Loop)
 
 
 State 88
 
-   48 Term: L_PAREN Expression R_PAREN .
+   47 Term: Ident L_PAREN Expression_Loop . R_PAREN
 
-    $default  reduce using rule 48 (Term)
+    R_PAREN  shift, and go to state 101
 
 
 State 89
 
-   40 Expression_Loop: Expression . COMMA Expression_Loop
-   41                | Expression .
+   48 Var: Ident L_SQUARE_BRACKET Expression . R_SQUARE_BRACKET
 
-    COMMA  shift, and go to state 102
-
-    $default  reduce using rule 41 (Expression_Loop)
+    R_SQUARE_BRACKET  shift, and go to state 102
 
 
 State 90
 
-   49 Term: Ident L_PAREN Expression_Loop . R_PAREN
-
-    R_PAREN  shift, and go to state 103
-
-
-State 91
-
-   50 Var: Ident L_SQUARE_BRACKET Expression . R_SQUARE_BRACKET
-
-    R_SQUARE_BRACKET  shift, and go to state 104
-
-
-State 92
-
    14 Statement: IF BoolExp THEN Statement_Loop . ElseStatement ENDIF
 
-    ELSE  shift, and go to state 105
+    ELSE  shift, and go to state 103
 
     $default  reduce using rule 22 (ElseStatement)
 
-    ElseStatement  go to state 106
+    ElseStatement  go to state 104
 
 
-State 93
+State 91
 
    26 BoolExpression: Expression Comp Expression .
 
     $default  reduce using rule 26 (BoolExpression)
 
 
+State 92
+
+   35 Expression: Mult_Expr PLUS Expression .
+
+    $default  reduce using rule 35 (Expression)
+
+
+State 93
+
+   36 Expression: Mult_Expr SUB Expression .
+
+    $default  reduce using rule 36 (Expression)
+
+
 State 94
 
-   37 Expression: Mult_Expr PLUS Expression .
+   41 Mult_Expr: Term MULT Mult_Expr .
 
-    $default  reduce using rule 37 (Expression)
+    $default  reduce using rule 41 (Mult_Expr)
 
 
 State 95
 
-   38 Expression: Mult_Expr SUB Expression .
+   42 Mult_Expr: Term DIV Mult_Expr .
 
-    $default  reduce using rule 38 (Expression)
+    $default  reduce using rule 42 (Mult_Expr)
 
 
 State 96
 
-   43 Mult_Expr: Term MULT Mult_Expr .
+   43 Mult_Expr: Term MOD Mult_Expr .
 
     $default  reduce using rule 43 (Mult_Expr)
 
 
 State 97
 
-   44 Mult_Expr: Term DIV Mult_Expr .
+   15 Statement: WHILE BoolExp BEGINLOOP Statement_Loop . ENDLOOP
 
-    $default  reduce using rule 44 (Mult_Expr)
+    ENDLOOP  shift, and go to state 105
 
 
 State 98
 
-   45 Mult_Expr: Term MOD Mult_Expr .
+   16 Statement: DO BEGINLOOP Statement_Loop ENDLOOP . WHILE BoolExp
 
-    $default  reduce using rule 45 (Mult_Expr)
+    WHILE  shift, and go to state 106
 
 
 State 99
 
-   15 Statement: WHILE BoolExp BEGINLOOP Statement_Loop . ENDLOOP
+   13 Statement: Ident L_SQUARE_BRACKET Expression R_SQUARE_BRACKET . ASSIGN Expression
 
-    ENDLOOP  shift, and go to state 107
+    ASSIGN  shift, and go to state 107
 
 
 State 100
 
-   16 Statement: DO BEGINLOOP Statement_Loop ENDLOOP . WHILE BoolExp
+   38 Expression_Loop: Expression COMMA . Expression_Loop
 
-    WHILE  shift, and go to state 108
+    IDENT    shift, and go to state 5
+    NUMBER   shift, and go to state 39
+    L_PAREN  shift, and go to state 53
+
+    $default  reduce using rule 37 (Expression_Loop)
+
+    Ident            go to state 42
+    Expression       go to state 87
+    Expression_Loop  go to state 108
+    Mult_Expr        go to state 46
+    Term             go to state 47
+    Var              go to state 48
 
 
 State 101
 
-   13 Statement: Ident L_SQUARE_BRACKET Expression R_SQUARE_BRACKET . ASSIGN Expression
+   47 Term: Ident L_PAREN Expression_Loop R_PAREN .
 
-    ASSIGN  shift, and go to state 109
+    $default  reduce using rule 47 (Term)
 
 
 State 102
 
-   40 Expression_Loop: Expression COMMA . Expression_Loop
+   48 Var: Ident L_SQUARE_BRACKET Expression R_SQUARE_BRACKET .
 
-    IDENT    shift, and go to state 5
-    NUMBER   shift, and go to state 39
-    L_PAREN  shift, and go to state 55
-
-    $default  reduce using rule 39 (Expression_Loop)
-
-    Ident            go to state 44
-    Expression       go to state 89
-    Expression_Loop  go to state 110
-    Mult_Expr        go to state 48
-    Term             go to state 49
-    Var              go to state 50
+    $default  reduce using rule 48 (Var)
 
 
 State 103
-
-   49 Term: Ident L_PAREN Expression_Loop R_PAREN .
-
-    $default  reduce using rule 49 (Term)
-
-
-State 104
-
-   50 Var: Ident L_SQUARE_BRACKET Expression R_SQUARE_BRACKET .
-
-    $default  reduce using rule 50 (Var)
-
-
-State 105
 
    23 ElseStatement: ELSE . Statement_Loop
 
@@ -1229,25 +1211,25 @@ State 105
     $default  reduce using rule 10 (Statement_Loop)
 
     Ident           go to state 35
-    Statement_Loop  go to state 111
+    Statement_Loop  go to state 109
     Statement       go to state 37
 
 
-State 106
+State 104
 
    14 Statement: IF BoolExp THEN Statement_Loop ElseStatement . ENDIF
 
-    ENDIF  shift, and go to state 112
+    ENDIF  shift, and go to state 110
 
 
-State 107
+State 105
 
    15 Statement: WHILE BoolExp BEGINLOOP Statement_Loop ENDLOOP .
 
     $default  reduce using rule 15 (Statement)
 
 
-State 108
+State 106
 
    16 Statement: DO BEGINLOOP Statement_Loop ENDLOOP WHILE . BoolExp
 
@@ -1255,62 +1237,60 @@ State 108
     NUMBER   shift, and go to state 39
     L_PAREN  shift, and go to state 40
     NOT      shift, and go to state 41
-    TRUE     shift, and go to state 42
-    FALSE    shift, and go to state 43
 
-    Ident           go to state 44
-    BoolExp         go to state 113
-    BoolExpression  go to state 46
-    Expression      go to state 47
-    Mult_Expr       go to state 48
-    Term            go to state 49
-    Var             go to state 50
+    Ident           go to state 42
+    BoolExp         go to state 111
+    BoolExpression  go to state 44
+    Expression      go to state 45
+    Mult_Expr       go to state 46
+    Term            go to state 47
+    Var             go to state 48
 
 
-State 109
+State 107
 
    13 Statement: Ident L_SQUARE_BRACKET Expression R_SQUARE_BRACKET ASSIGN . Expression
 
     IDENT    shift, and go to state 5
     NUMBER   shift, and go to state 39
-    L_PAREN  shift, and go to state 55
+    L_PAREN  shift, and go to state 53
 
-    Ident       go to state 44
-    Expression  go to state 114
-    Mult_Expr   go to state 48
-    Term        go to state 49
-    Var         go to state 50
-
-
-State 110
-
-   40 Expression_Loop: Expression COMMA Expression_Loop .
-
-    $default  reduce using rule 40 (Expression_Loop)
+    Ident       go to state 42
+    Expression  go to state 112
+    Mult_Expr   go to state 46
+    Term        go to state 47
+    Var         go to state 48
 
 
-State 111
+State 108
+
+   38 Expression_Loop: Expression COMMA Expression_Loop .
+
+    $default  reduce using rule 38 (Expression_Loop)
+
+
+State 109
 
    23 ElseStatement: ELSE Statement_Loop .
 
     $default  reduce using rule 23 (ElseStatement)
 
 
-State 112
+State 110
 
    14 Statement: IF BoolExp THEN Statement_Loop ElseStatement ENDIF .
 
     $default  reduce using rule 14 (Statement)
 
 
-State 113
+State 111
 
    16 Statement: DO BEGINLOOP Statement_Loop ENDLOOP WHILE BoolExp .
 
     $default  reduce using rule 16 (Statement)
 
 
-State 114
+State 112
 
    13 Statement: Ident L_SQUARE_BRACKET Expression R_SQUARE_BRACKET ASSIGN Expression .
 

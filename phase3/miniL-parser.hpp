@@ -100,7 +100,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 91 "miniL.y" /* yacc.c:1909  */
+#line 96 "miniL.y" /* yacc.c:1909  */
 
   /* put your types here */
   char* ident_val;
