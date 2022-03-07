@@ -19,7 +19,7 @@ extern FILE * yyin;
 extern int yylex(void);
 char *identToken;
 int numberToken;
-int count_names = 0;
+int counter = 0;
 
 enum Type { Integer, Array };
 struct Symbol {
@@ -33,6 +33,7 @@ struct Function {
 
 std::vector <Function> symbol_table;
 std::stringstream out;
+std::vector <int> continueCount;
 
 std::string gen_temp() {
   static int count = 0;
@@ -40,9 +41,12 @@ std::string gen_temp() {
 }
 
 std::string gen_label() {
-  static int count = 0;
-  return "__label__" + std::to_string(count++);
-}
+  counter = 0;
+    // static int count = 0;
+    // return std::to_string(count++);
+  return std::to_string(counter);
+    // return "__label__" + std::to_string(count++);
+} 
 
 Function *get_function() {
   int last = symbol_table.size()-1;
@@ -203,6 +207,7 @@ Function: FUNCTION Ident SEMICOLON BEGIN_PARAMS Declaration_Loop END_PARAMS BEGI
 {
   CodeNode *node = new CodeNode;
   std::string func_name = $2;
+  add_function_to_symbol_table(func_name);
   node->code = "";
   node->code += std::string("func ") + func_name + std::string("\n");
   // declare the declarations
@@ -226,6 +231,7 @@ Declaration: Ident COLON INTEGER
   {
     // printf("Declaration: %s\n", $1);
     std::string id = $1;
+    add_function_to_symbol_table(id);
     CodeNode *node = new CodeNode;
     node->code = std::string(". ") + id + std::string("\n");
     $$ = node;
@@ -294,39 +300,78 @@ Statement: Ident ASSIGN Expression
     | IF BoolExp THEN Statement_Loop ElseStatement ENDIF
   {
     CodeNode *node = new CodeNode; 
+
+    std::string truee = gen_label();
+    std::string falsee = gen_label();
+    std::string endiff = gen_label();
+
     CodeNode *expr = $2;
     CodeNode *statement= $4;
     CodeNode *elsestate = $5;
-    std::string temp1 = gen_label();
-    std::string temp2 = gen_label();
+    
+    node->code = expr->code + std::string("\n");
+    node->code += std::string("?:= ") + "if_true" + truee + std::string(", ") + expr->name + std::string("\n");
 
-    node->code = expr->code + std::string("?:= ") + temp1 + std::string(", ") + expr->name + std::string("\n");
-
-    node->code += elsestate->code + std::string(":= ") + temp2 + std::string("\n");
-    node->code += elsestate->code + std::string(": ") + temp1 + std::string("\n");
-
-    node->code += statement->code + std::string(":= ") + temp2 + std::string("\n");
-
+    if (elsestate->code != "") { 
+      node->code += std::string(":= ") + "else" + falsee + std::string("\n");
+      node->code += std::string(": ") + "if_true" + truee + std::string("\n");
+      node->code += statement->code + std::string("\n");
+      node->code += std::string(":= ") + "endif" + endiff + std::string("\n");
+      node->code += std::string(": ") + "else" + falsee + std::string("\n");
+      node->code += elsestate->code + std::string("\n");  
+      node->code += std::string(": ") + "endif" + endiff + std::string("\n");
+    } else {
+      node->code += std::string(":= ") + "else" + falsee + std::string("\n");
+      node->code += std::string(": ") + "if_true" + truee + std::string("\n");
+      node->code += statement->code + std::string("\n");
+      node->code += std::string(": ") + "else" + falsee + std::string("\n");
+      node->code += elsestate->code + std::string("\n");
+      node->code += std::string(":= ") + "endif" + endiff + std::string("\n");    
+    }
     $$ = node;
   }		 
     | WHILE BoolExp BEGINLOOP Statement_Loop ENDLOOP
 	{
     CodeNode *node = new CodeNode;
+    std::string condition = gen_label();
+    std::string start = gen_label();
+    std::string end = gen_label();
+    CodeNode *boolexpr = $2;
+    CodeNode *statement = $4;
+    
+    std::string output = std::string(":= ") + condition;    
+    node->code = std::string(": ") + std::string("beginloop") + condition + std::string("\n");
+    node->code += boolexpr->code + std::string("\n");
+    node->code += std::string("?:= ") + std::string("loopbody") + start + std::string(", ") +  boolexpr->name + std::string("\n");
+    node->code += std::string(":= ") + std::string("endloop") + end + std::string("\n");
+    node->code += std::string(": ") + std::string("loopbody") + start + std::string("\n");
+    node->code += statement->code + std::string("\n");
+    node->code += std::string(":= ") + std::string("beginloop") + condition + std::string("\n");
+    node->code += std::string(": ") + std::string("endloop")s + end + std::string("\n");
+
     $$ = node;
   }
     | DO BEGINLOOP Statement_Loop ENDLOOP WHILE BoolExp
 	{
     CodeNode *node = new CodeNode;
+    std::string start = gen_temp();
+    std::string condition = gen_temp();
+
+    node->code = std::string(": ") + start + std::string("\n");
+    node->code = $3->code + std::string("\n");
+    node->code = std::string(": ") + condition + std::string("\n");
+    node->code = $6->code + std::string("\n");
+    node->code = std::string("?:= ") + start + std::string(", ") + $6->name + std::string("\n");
     $$ = node;
   }
     | READ Var
 	{
     CodeNode *node = new CodeNode;
-      CodeNode *var = $2;
-      std::string id = var->name;
-      node->code = "";
-      node->code += std::string(".< ") + id + std::string("\n");
-      $$ = node;
+    CodeNode *var = $2;
+    std::string id = var->name;
+    node->code = "";
+    node->code += std::string(".< ") + id + std::string("\n");
+    $$ = node;
   }
     | WRITE Var
   {
@@ -341,14 +386,17 @@ Statement: Ident ASSIGN Expression
 	{
     CodeNode *node = new CodeNode;
     node->code = "";
-    node->code = std::string("continue\n");
+      // node->code = std::string("continue\n");
     $$ = node;
   }
     | BREAK
 	{
     CodeNode *node = new CodeNode;
-    node->code = "";
-    node->code = std::string("break\n");
+    // node->code = "";
+    // node->code = std::string("break\n");
+    node->code = std::string(":= if_true") + std::string("\n");
+    node->code = std::string(":= endloop") + std::string("\n");
+    node->code = std::string(":= endif") + std::string("\n");
     $$ = node;
   }
     | RETURN Expression
@@ -377,6 +425,7 @@ BoolExp:  NOT BoolExpression
       CodeNode *node = new CodeNode;
       CodeNode *expr = $2;
       std::string temp = gen_temp();
+      counter++;
       node->name = temp;
       node->code = expr->code + decl_temp_code(temp);
       node->code += std::string("! ") + temp + std::string(", ") + expr->name + std::string("\n");
@@ -398,6 +447,7 @@ BoolExpression: Expression Comp Expression
     CodeNode *operation = $2;
     CodeNode *expr2 = $3;
     std::string temp = gen_temp();
+    counter++;
     node->name = temp;
     node->code = expr1->code + expr2->code + decl_temp_code(temp);
     node->code += operation->name + temp + std::string(", ") + expr1->name + std::string(", ") + expr2->name + std::string("\n");
@@ -459,6 +509,7 @@ Expression: Mult_Expr
     | Mult_Expr PLUS Expression
   {
     std::string temp = gen_temp();
+    counter++;
     CodeNode *node = new CodeNode;
     node->code = $1->code + $3->code + decl_temp_code(temp);
     node->code += std::string("+ ") + temp + std::string(", ") + $1->name + std::string(", ") + $3->name + std::string("\n");
@@ -504,6 +555,7 @@ Mult_Expr:  Term
     | Term MULT Mult_Expr
   {
     std::string temp = gen_temp();
+    counter++;
     CodeNode *node = new CodeNode;
     node->code = $1->code + $3->code + decl_temp_code(temp);
     node->code += std::string("* ") + temp + std::string(", ") + $1->name + std::string(", ") + $3->name + std::string("\n");
@@ -513,6 +565,7 @@ Mult_Expr:  Term
   | Term DIV Mult_Expr
 	{
     std::string temp = gen_temp();
+    counter++;
     CodeNode *node = new CodeNode;
     node->code = $1->code + $3->code + decl_temp_code(temp);
     node->code += std::string("/ ") + temp + std::string(", ") + $1->name + std::string(", ") + $3->name + std::string("\n");
@@ -522,6 +575,7 @@ Mult_Expr:  Term
     | Term MOD Mult_Expr
   {
     std::string temp = gen_temp();
+    counter++;
     CodeNode *node = new CodeNode;
     node->code = $1->code + $3->code + decl_temp_code(temp);
     node->code += std::string("% ") + temp + std::string(", ") + $1->name + std::string(", ") + $3->name + std::string("\n");
@@ -617,4 +671,4 @@ void yyerror(const char *s) {
     std::ofstream file("out.mil");
     file << out.str() << std::endl;
     return 0;
-  }  
+  } 
